@@ -332,7 +332,6 @@ public class Main {
                     	}
                     }
                     // 여기까지 왔다면 블록은 현재 충돌된 상태임. 아래 최종 작업에서 top을 하나 빼주어야함.
-                	
                     break;
                 default:
                     System.out.println("unknown key!");
@@ -365,6 +364,7 @@ public class Main {
                     	if(currentDebugLevel >= debugLevel2){
                     		System.out.println("블록이 바닥에 충돌하였음. 최종 top의 값 : " + top);
                     	}
+                    	newBlockNeeded = true;
                         break;
                 }
                 tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx());
