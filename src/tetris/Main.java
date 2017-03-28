@@ -8,14 +8,17 @@ import java.util.Random;
 public class Main {
 	/*
 	 * 디버그 레벨에 따라서 출력여부를 결정한다.
-	 * level이 높을수록 더 자세하게 정보를 출력한다. 
-	 * 예) currentDebugLevel의 값이 2라면, debugLevel 1 ~ 2까지의 정보를 출력한다.
-	 * 1 ~ 2는 매우 중요부터 평범한 정보. 
+	 * level이 높을수록 더 자세하게 정보를 출력한다.
+	 * 예) currentDebugLevel의 값이 3이면, 모든 정보를 출력한다. 
+	 * 예) currentDebugLevel의 값이 2이면, debugLevel 1 ~ 2까지의 정보를 출력한다. (특정 이벤트 및 흐름)
+	 * 예) currentDebugLevel의 값이 1이면, debugLevel 1만 출력 ( 프로그램의 흐름에 대한 정보만 ) 
 	 */
 	private final static int currentDebugLevel = 3;	// 현재 디버그 레벨.
-	private final static int debugLevel1 = 1;	// 매우 중요.
-	private final static int debugLevel2 = 2;	// 평범.
-	private final static int debugLevel3 = 3;	// 중요하지 않음.
+	private final static int debugLevel1 = 1;	// 프로그램의 흐름에 대한 정보. 
+	private final static int debugLevel2 = 2;	// 프로그램에서 어떠한 이벤트에 대한 정보.
+	private final static int debugLevel3 = 3;	// 특정 이벤트가 발생한 상황에서 변수의 변화 등에 대한 정보.
+	
+	private final static int numberOfBlockType = 7;	// 블록의 종류
 	
 	private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     private static String line = null;
@@ -23,175 +26,180 @@ public class Main {
 	
     int[][] test = {{1,2,3},{1,2,3},{1,2,3}};
     
-    static int[][] blockType0_degree0 = {
+    final static int[][] blockType0_degree0 = {
     		{0,0,0},
     		{0,1,0},
     		{1,1,1}
     };
     
-    static int[][] blockType0_degree1 = {
+    final static int[][] blockType0_degree1 = {
     		{0,1,0},
     		{0,1,1},
     		{0,1,0}
     };
     
-    static int[][] blockType0_degree2 = {
+    final static int[][] blockType0_degree2 = {
     		{0,0,0},
     		{1,1,1},
     		{0,1,0}
     };
     
-    static int[][] blockType0_degree3 = {
+    final static int[][] blockType0_degree3 = {
     		{0,1,0},
     		{1,1,0},
     		{0,1,0}
     };
     
-    static int[][] blockType1_degree0 = {	
+    final static int[][] blockType1_degree0 = {	
     		{1,0,0},
     		{1,1,1},
     		{0,0,0}
     };
     
-    static int[][] blockType1_degree1 = {	
+    final static int[][] blockType1_degree1 = {	
     		{0,1,1},
     		{0,1,0},
     		{0,1,0}
     };
     
-    static int[][] blockType1_degree2 = {	
+    final static int[][] blockType1_degree2 = {	
     		{0,0,0},
     		{1,1,1},
     		{0,0,1}
     };
     
-    static int[][] blockType1_degree3 = {	
+    final static int[][] blockType1_degree3 = {	
     		{0,1,0},
     		{0,1,0},
     		{1,1,0}
     };
     
-    static int[][] blockType2_degree0 = {	
+    final static int[][] blockType2_degree0 = {	
     		{0,0,1},
     		{1,1,1},
     		{0,0,0}
     };
     
-    static int[][] blockType2_degree1 = {	
+    final static int[][] blockType2_degree1 = {	
     		{0,1,0},
     		{0,1,0},
     		{0,1,1}
     };
     
-    static int[][] blockType2_degree2 = {	
+    final static int[][] blockType2_degree2 = {	
     		{0,0,0},
     		{1,1,1},
     		{1,0,0}
     };
     
-    static int[][] blockType2_degree3 = {	
+    final static int[][] blockType2_degree3 = {	
     		{1,1,0},
     		{0,1,0},
     		{0,1,0}
     };
     
-    static int[][] blockType3_degree0 = {	
+    final static int[][] blockType3_degree0 = {	
     		{0,0,0,0},
     		{0,0,0,0},
     		{1,1,1,1},
     		{0,0,0,0}
     };
     
-    static int[][] blockType3_degree1 = {	
+    final static int[][] blockType3_degree1 = {	
     		{0,1,0,0},
     		{0,1,0,0},
     		{0,1,0,0},
     		{0,1,0,0}
     };
     
-    static int[][] blockType3_degree2 = {	
+    final static int[][] blockType3_degree2 = {	
     		{0,0,0,0},
     		{0,0,0,0},
     		{1,1,1,1},
     		{0,0,0,0}
     };
     
-    static int[][] blockType3_degree3 = {	
+    final static int[][] blockType3_degree3 = {	
     		{0,1,0,0},
     		{0,1,0,0},
     		{0,1,0,0},
     		{0,1,0,0}
     };
     
-    static int[][] blockType4_degree0 = {	
+    final static int[][] blockType4_degree0 = {	
     		{1,1},
     		{1,1}
     };
     
-    static int[][] blockType4_degree1 = {	
+    final static int[][] blockType4_degree1 = {	
     		{1,1},
     		{1,1}
     };
     
-    static int[][] blockType4_degree2 = {	
+    final static int[][] blockType4_degree2 = {	
     		{1,1},
     		{1,1}
     };
     
-    static int[][] blockType4_degree3 = {	
+    final static int[][] blockType4_degree3 = {	
     		{1,1},
     		{1,1}
     };
     
-    static int[][] blockType5_degree0 = {
+    final static int[][] blockType5_degree0 = {
     		{0,1,1},
     		{1,1,0},
     		{0,0,0}
     };
     
-    static int[][] blockType5_degree1 = {
+    final static int[][] blockType5_degree1 = {
     		{0,1,0},
     		{0,1,1},
     		{0,0,1}
     };
     
-    static int[][] blockType5_degree2 = {
+    final static int[][] blockType5_degree2 = {
     		{0,0,0},
     		{0,1,1},
     		{1,1,0}
     };
     
-    static int[][] blockType5_degree3 = {
+    final static int[][] blockType5_degree3 = {
     		{1,0,0},
     		{1,1,0},
     		{0,1,0}
     };
     
-    static int[][] blockType6_degree0 = {
+    final static int[][] blockType6_degree0 = {
     		{0,0,0},
     		{1,1,0},
     		{0,1,1}
     };
     
-    static int[][] blockType6_degree1 = {
+    final static int[][] blockType6_degree1 = {
     		{0,0,1},
     		{0,1,1},
     		{0,1,0}
     };
     
-    static int[][] blockType6_degree2 = {
+    final static int[][] blockType6_degree2 = {
     		{0,0,0},
     		{1,1,0},
     		{0,1,1}
     };
     
-    static int[][] blockType6_degree3 = {
+    final static int[][] blockType6_degree3 = {
     		{0,1,0},
     		{1,1,0},
     		{1,0,0}
     };
     
-	static int[][] arrayScreen = {
+    final static int[][] emptyLine = {
+    	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+    };
+    
+    
+    final static int[][] arrayScreen = {
             { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
             { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
             { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
@@ -210,12 +218,6 @@ public class Main {
             { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
             { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
             { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-    };
-	static int[][] arrayBlk = {
-            {1, 0, 0, 0},
-            {1, 0, 0, 0},
-            {1, 0, 0, 0},
-            {1, 0, 0, 0},
     };
 	
 	private static char getKey() throws IOException {
@@ -237,6 +239,7 @@ public class Main {
     private static int iScreenDy = 15;
     private static int iScreenDx = 10;
     private static int iScreenDw = 4;
+    
     private static int[][] createArrayScreen(int dy, int dx, int dw) {
         int y, x;
         int[][] array = new int[dy + dw][dx + 2 * dw];
@@ -251,6 +254,7 @@ public class Main {
                 array[y][x] = 1;
         return array;
     }
+    
     public static void printScreen(Matrix screen) {
         int dy = screen.get_dy();
         int dx = screen.get_dx();
@@ -285,16 +289,13 @@ public class Main {
         Matrix iScreen = new Matrix(arrayScreen);
         
         Random random = new Random(); // 다음 블록을 결정할 난수생성기
-        int idxBlockType = random.nextInt(7);
+        int idxBlockType = random.nextInt(numberOfBlockType);
         int idxBlockDegree = 0;	// 각도는 처음에 0으로 블록을 생성함.
-        if(currentDebugLevel >= debugLevel2){
+        if(currentDebugLevel >= debugLevel3){
         	System.out.println("다음 블록 번호 : " + idxBlockType);
         }
-        //지금은 이걸로 다음 블록을 생성한다. 이것을 랜덤으로 만들어야해.
+        //다음 블록을 생성한다. 
         Matrix currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree];	// 처음은 degree0 으로 생성한다. 
-        
-        
-        
         Matrix tempBlk = iScreen.clip(top, left, top+currBlk.get_dy(), left+currBlk.get_dx());
         tempBlk = tempBlk.add(currBlk);
         Matrix oScreen = new Matrix(iScreen);
@@ -304,13 +305,25 @@ public class Main {
         while ((key = getKey()) != 'q') {
             switch (key) {
                 case 'a':
+                	if(currentDebugLevel >= debugLevel2){
+                		System.out.println("블록 왼쪽 이동.");
+                	}
                     left--;
                     break;
                 case 'd':
+                	if(currentDebugLevel >= debugLevel2){
+                		System.out.println("블록 오른쪽 이동.");
+                	}
                     left++;
                     break;
                 case 's':
+                	if(currentDebugLevel >= debugLevel2){
+                		System.out.println("블록 아래로 이동. top 변화 전 : " + top);
+                	}
                     top++;
+                    if(currentDebugLevel >= debugLevel2){
+                		System.out.println("블록 아래로 이동. top 변화 후: " + top);
+                	}
                     break;
                 case 'w':
                 	if(currentDebugLevel >= debugLevel2){
@@ -320,21 +333,26 @@ public class Main {
                 	currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree];
                     break;
                 case ' ':
+                	if(currentDebugLevel >= debugLevel2){
+                		System.out.println("블록을 끝까지 내립니다.");
+                	}
                 	// 바닥에 닿기 전까지 한칸씩 내려가며 충돌하나 비교한다.
                 	tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx()); // 블록이 생성될 위치 초기 세팅.
                     tempBlk = tempBlk.add(currBlk); // 현재 블록 넣고.
-                    while (!tempBlk.anyGreaterThan(1)){ // 충돌까지 내린다. 
+                    while (!tempBlk.anyGreaterThan(1)){ // 충돌까지 내린다.
                     	top ++;	// 내리고.
                     	tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx()); // 갱신하고.
                         tempBlk = tempBlk.add(currBlk); // 현재 블록 넣고.
-                    	if(currentDebugLevel >= debugLevel2){
+                    	if(currentDebugLevel >= debugLevel3){
                     		System.out.println("블록을 하나 내려봅니다. top : " + top );
                     	}
                     }
                     // 여기까지 왔다면 블록은 현재 충돌된 상태임. 아래 최종 작업에서 top을 하나 빼주어야함.
                     break;
                 default:
-                    System.out.println("unknown key!");
+                	if(currentDebugLevel >= debugLevel2){
+                		System.out.println("잘못된 키의 입력!");
+                	}
             }
             tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx());
             tempBlk = tempBlk.add(currBlk);
@@ -361,7 +379,7 @@ public class Main {
                     case ' ':
                     	// 이미 충돌된 상태임. top을 하나 빼주어 충돌 직전 위치로 이동. 
                     	top--;
-                    	if(currentDebugLevel >= debugLevel2){
+                    	if(currentDebugLevel >= debugLevel3){
                     		System.out.println("블록이 바닥에 충돌하였음. 최종 top의 값 : " + top);
                     	}
                     	newBlockNeeded = true;
@@ -379,15 +397,14 @@ public class Main {
                 top = 0;
                 left = iScreenDw + iScreenDx / 2 - 2;
                 newBlockNeeded = false;
-                
                
                 random = new Random(); // 다음 블록을 결정할 난수생성기
-                idxBlockType = random.nextInt(7);
+                idxBlockType = random.nextInt(numberOfBlockType);
                 idxBlockDegree = 0; // 각도 초기화.
-                if(currentDebugLevel >= debugLevel2){
+                if(currentDebugLevel >= debugLevel3){
                 	System.out.println("다음 블록 번호 : " + idxBlockType);
                 }
-                currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree]; // 처음은 degree0으로 생성한다.
+                currBlk = setOfBlockObjects[3][idxBlockDegree]; // 처음은 degree0으로 생성한다.
                 tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx());
                 tempBlk = tempBlk.add(currBlk);
                 if (tempBlk.anyGreaterThan(1)){
@@ -398,7 +415,42 @@ public class Main {
                 oScreen.paste(tempBlk, top, left);
                 printScreen(oScreen);
                 System.out.println();
+                
+                // 여기에 FullLineDetect
+            	int fullLine;
+            	fullLine = oScreen.findFullLine(iScreenDw); 
+            	if(currentDebugLevel >= debugLevel3){
+            		System.out.println("FullLine검사, 해당되는 라인(-1이라면 없음) : " + fullLine);
+            	}
+            	if(fullLine > 0){
+                    tempBlk = iScreen.clip(0, 4, fullLine, 14);
+                    System.out.println("자른거.");
+                    tempBlk.print();
+                    //tempBlk = tempBlk.add(currBlk);
+                    oScreen = new Matrix(iScreen);
+                    oScreen.paste(tempBlk, 1, 4);
+                    printScreen(oScreen); System.out.println();
+            	}
             }
         }
     }
 }
+
+/*
+public int findFullLine(int screenDw){
+	for(int i = dy - screenDw - 1; i >= 0; i--){	// 바닥에서 위로 올라오며 검사한다.
+		System.out.println("풀라인 검사 : " + i + "번 행." );
+		boolean fullLineFlag = true;
+		for(int j = screenDw - 1; j < dx - screenDw - 1; j++ ){
+			System.out.println("풀라인 검사 : " + j + "번 열." );
+			if(array[i][j] == 0){
+				System.out.println("FullLine 아님. 다음 줄로 이동" );
+				break;
+			}
+		}
+		System.out.println("풀라인 : " + dx);
+	}
+	
+	return 1;
+}
+*/
