@@ -24,8 +24,177 @@ public class Main {
     private static String line = null;
     private static int nKeys = 0;
 	
-    int[][] test = {{1,2,3},{1,2,3},{1,2,3}};
+    private static int[][][][] setOfBlockArrays = { // [7][4][?][?]  -> [종류][회전][가로][세로] 
+    		{
+    			{
+    				{0,0,0,0},
+    				{0,0,0,0},
+    				{1,1,1,1},
+    				{0,0,0,0},
+    			},
+    			{
+    				{0,1,0,0},
+    				{0,1,0,0},
+    				{0,1,0,0},
+    				{0,1,0,0},
+    			},
+    			{
+    				{0,0,0,0},
+    				{0,0,0,0},
+    				{1,1,1,1},
+    				{0,0,0,0},
+    			},
+    			{
+    				{0,0,0,0},
+    				{0,0,0,0},
+    				{1,1,1,1},
+    				{0,0,0,0},
+    			}
+    		},
+    		{
+    			{
+    				{0,0,0},
+        			{0,1,0},
+        			{1,1,1},
+    			},
+    			{
+    				{0,1,0},
+        			{0,1,1},
+        			{0,1,0},
+    			},
+    			{
+    				{0,0,0},
+        			{1,1,1},
+        			{0,1,0},
+    			},
+    			{
+    				{0,1,0},
+        			{1,1,0},
+        			{0,1,0},
+    			}
+    		},
+    		{
+    			{
+    				{1,0,0},
+        			{1,1,1},
+        			{0,0,0},
+    			},
+    			{
+    				{0,1,1},
+        			{0,1,0},
+        			{0,1,0},
+    			},
+    			{
+    				{0,0,0},
+        			{1,1,1},
+        			{0,0,1},
+    			},
+    			{
+    				{0,1,0},
+        			{0,1,0},
+        			{1,1,0},
+    			}
+    		},
+    		{
+    			{
+    				{0,0,1},
+    				{1,1,1},
+    				{0,0,0},
+    			},
+    			{
+    				{0,1,0},
+    				{0,1,0},
+    				{0,1,1},
+    			},
+    			{
+    				{0,0,0},
+    				{1,1,1},
+    				{1,0,0},
+    			},
+    			{
+    				{1,1,0},
+    				{0,1,0},
+    				{0,1,0},
+    			}
+    		},
+    		{
+    			{
+    				{1,1},
+    	    		{1,1},
+    			},
+    			{
+    				{1,1},
+    	    		{1,1},
+    			},
+    			{
+    				{1,1},
+    	    		{1,1},
+    			},
+    			{
+    				{1,1},
+    	    		{1,1},
+    			}
+    		},
+    		{
+    			{
+    				{0,1,1},
+    	    		{1,1,0},
+    	    		{0,0,0},
+    			},
+    			{
+    				{0,1,0},
+    	    		{0,1,1},
+    	    		{0,0,1},
+    			},
+    			{
+    				{0,0,0},
+    	    		{0,1,1},
+    	    		{1,1,0},
+    			},
+    			{
+    				{1,0,0},
+    	    		{1,1,0},
+    	    		{0,1,0},
+    			}
+    		},
+    		{
+    			{
+    				{0,0,0},
+    	    		{1,1,0},
+    	    		{0,1,1},
+    			},
+    			{
+    	    		{0,0,1},
+    	    		{0,1,1},
+    	    		{0,1,0},
+    			},
+    			{
+    				{0,0,0},
+    	    		{1,1,0},
+    	    		{0,1,1},
+    			},
+    			{
+    				{0,1,0},
+    	    		{1,1,0},
+    	    		{1,0,0},
+    			}
+    		}
+    };
+    private static Matrix[][] setOfBlockObjects;
     
+    public static void init(int[][][][] setOfBlkArrays) throws MatrixException{
+    	int nTypes = setOfBlkArrays.length;
+    	int nDegrees = setOfBlkArrays[0].length;
+    	
+    	setOfBlockObjects = new Matrix[nTypes][nDegrees];
+    	
+    	for(int t = 0; t < nTypes; t++){
+    		for(int d = 0; d < nDegrees; d++){
+    			setOfBlockObjects[t][d] = new Matrix(setOfBlkArrays[t][d]);
+    		}
+    	}
+    }
+    /*
     final static int[][] blockType0_degree0 = {
     		{0,0,0},
     		{0,1,0},
@@ -193,28 +362,8 @@ public class Main {
     		{1,1,0},
     		{1,0,0}
     };
+    */
     
-    final static int[][] arrayScreen = {
-            { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
-            { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
-            { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
-            { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 }, 
-            { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
-            { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
-            { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
-            { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
-            { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
-            { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
-            { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
-            { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
-            { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
-            { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
-            { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-    };
-	
 	private static char getKey() throws IOException {
         char ch;
         if (nKeys != 0) {
@@ -266,7 +415,8 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
-        Matrix[][] setOfBlockObjects = {
+        /*
+    	Matrix[][] setOfBlockObjects = {
         	{ new Matrix(blockType0_degree0), new Matrix(blockType0_degree1), new Matrix(blockType0_degree2), new Matrix(blockType0_degree3) },
         	{ new Matrix(blockType1_degree0), new Matrix(blockType1_degree1), new Matrix(blockType1_degree2), new Matrix(blockType1_degree3) },	
         	{ new Matrix(blockType2_degree0), new Matrix(blockType2_degree1), new Matrix(blockType2_degree2), new Matrix(blockType2_degree3) },
@@ -275,6 +425,8 @@ public class Main {
         	{ new Matrix(blockType5_degree0), new Matrix(blockType5_degree1), new Matrix(blockType5_degree2), new Matrix(blockType5_degree3) },
         	{ new Matrix(blockType6_degree0), new Matrix(blockType6_degree1), new Matrix(blockType6_degree2), new Matrix(blockType6_degree3) }
         };
+        */
+        init(setOfBlockArrays);
     	
         boolean newBlockNeeded = false;
         int top = 0;
@@ -286,9 +438,7 @@ public class Main {
         Random random = new Random(); // 다음 블록을 결정할 난수생성기
         int idxBlockType = random.nextInt(numberOfBlockType);
         int idxBlockDegree = 0;	// 각도는 처음에 0으로 블록을 생성함.
-        if(currentDebugLevel >= debugLevel3){
-        	System.out.println("다음 블록 번호 : " + idxBlockType);
-        }
+        if(currentDebugLevel >= debugLevel3) System.out.println("다음 블록 번호 : " + idxBlockType);
         //다음 블록을 생성한다. 
         Matrix currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree];	// 처음은 degree0 으로 생성한다. 
         Matrix tempBlk = iScreen.clip(top, left, top+currBlk.get_dy(), left+currBlk.get_dx());
@@ -300,37 +450,25 @@ public class Main {
         while ((key = getKey()) != 'q') {
             switch (key) {
                 case 'a':
-                	if(currentDebugLevel >= debugLevel2){
-                		System.out.println("블록 왼쪽 이동.");
-                	}
+                	if(currentDebugLevel >= debugLevel2) System.out.println("블록 왼쪽 이동.");
                     left--;
                     break;
                 case 'd':
-                	if(currentDebugLevel >= debugLevel2){
-                		System.out.println("블록 오른쪽 이동.");
-                	}
+                	if(currentDebugLevel >= debugLevel2) System.out.println("블록 오른쪽 이동.");
                     left++;
                     break;
                 case 's':
-                	if(currentDebugLevel >= debugLevel2){
-                		System.out.println("블록 아래로 이동. top 변화 전 : " + top);
-                	}
+                	if(currentDebugLevel >= debugLevel2) System.out.println("블록 아래로 이동. top 변화 전 : " + top);
                     top++;
-                    if(currentDebugLevel >= debugLevel2){
-                		System.out.println("블록 아래로 이동. top 변화 후: " + top);
-                	}
+                    if(currentDebugLevel >= debugLevel2) System.out.println("블록 아래로 이동. top 변화 후: " + top);
                     break;
                 case 'w':
-                	if(currentDebugLevel >= debugLevel2){
-                		System.out.println("블록을 회전시킵니다.");
-                	}
+                	if(currentDebugLevel >= debugLevel2) System.out.println("블록을 회전시킵니다.");
                 	idxBlockDegree = (idxBlockDegree + 1) % 4;
                 	currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree];
                     break;
                 case ' ':
-                	if(currentDebugLevel >= debugLevel2){
-                		System.out.println("블록을 끝까지 내립니다.");
-                	}
+                	if(currentDebugLevel >= debugLevel2) System.out.println("블록을 끝까지 내립니다.");
                 	// 바닥에 닿기 전까지 한칸씩 내려가며 충돌하나 비교한다.
                 	tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx()); // 블록이 생성될 위치 초기 세팅.
                     tempBlk = tempBlk.add(currBlk); // 현재 블록 넣고.
@@ -338,16 +476,12 @@ public class Main {
                     	top ++;	// 내리고.
                     	tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx()); // 갱신하고.
                         tempBlk = tempBlk.add(currBlk); // 현재 블록 넣고.
-                    	if(currentDebugLevel >= debugLevel3){
-                    		System.out.println("블록을 하나 내려봅니다. top : " + top );
-                    	}
+                    	if(currentDebugLevel >= debugLevel3) System.out.println("블록을 하나 내려봅니다. top : " + top );
                     }
                     // 여기까지 왔다면 블록은 현재 충돌된 상태임. 아래 최종 작업에서 top을 하나 빼주어야함.
                     break;
                 default:
-                	if(currentDebugLevel >= debugLevel2){
-                		System.out.println("잘못된 키의 입력!");
-                	}
+                	if(currentDebugLevel >= debugLevel2) System.out.println("잘못된 키의 입력!");
             }
             tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx());
             tempBlk = tempBlk.add(currBlk);
@@ -364,9 +498,7 @@ public class Main {
                         newBlockNeeded = true;
                         break;
                     case 'w':
-                    	if(currentDebugLevel >= debugLevel2){
-                    		System.out.println("블록이 회전 과정에서 충돌하였음. 이전으로 돌아감");
-                    	}
+                    	if(currentDebugLevel >= debugLevel2) System.out.println("블록이 회전 과정에서 충돌하였음. 이전으로 돌아감");
                     	idxBlockDegree = idxBlockDegree - 1;	// Degree를 이전으로 돌림.
                     	if(idxBlockDegree == -1) idxBlockDegree = 3; // 회전 : 3 -> 0 , 충돌 : 0 -> -1 케이스니 3으로 되돌림.
                     	currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree];
@@ -374,9 +506,7 @@ public class Main {
                     case ' ':
                     	// 이미 충돌된 상태임. top을 하나 빼주어 충돌 직전 위치로 이동. 
                     	top--;
-                    	if(currentDebugLevel >= debugLevel3){
-                    		System.out.println("블록이 바닥에 충돌하였음. 최종 top의 값 : " + top);
-                    	}
+                    	if(currentDebugLevel >= debugLevel3) System.out.println("블록이 바닥에 충돌하였음. 최종 top의 값 : " + top);
                     	newBlockNeeded = true;
                         break;
                 }
@@ -396,9 +526,8 @@ public class Main {
                 random = new Random(); // 다음 블록을 결정할 난수생성기
                 idxBlockType = random.nextInt(numberOfBlockType);
                 idxBlockDegree = 0; // 각도 초기화.
-                if(currentDebugLevel >= debugLevel3){
-                	System.out.println("다음 블록 번호 : " + idxBlockType);
-                }
+                if(currentDebugLevel >= debugLevel3) System.out.println("다음 블록 번호 : " + idxBlockType);
+                
                 currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree]; // 처음은 degree0으로 생성한다.
                 tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx());
                 tempBlk = tempBlk.add(currBlk);
@@ -414,9 +543,7 @@ public class Main {
                 // 여기에 FullLineDetect
             	int fullLine;
             	fullLine = oScreen.findFullLine(iScreenDw); 
-            	if(currentDebugLevel >= debugLevel3){
-            		System.out.println("FullLine검사, 해당되는 라인(-1이라면 없음) : " + fullLine);
-            	}
+            	if(currentDebugLevel >= debugLevel3) System.out.println("FullLine검사, 해당되는 라인(-1이라면 없음) : " + fullLine);
             	// findFullLine 함수는 fullLine인 줄의 number를 리턴함. fullLine이 없다면 -1을 리턴함.
             	if(fullLine > 0){	// fullLine이 검출된 경
                     tempBlk = iScreen.clip(0, iScreenDw, fullLine, iScreenDw + iScreenDx);	 // fullLine위로 모두 잘라낸다.  
