@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Random;
 
-public class Main {
+public class Tetris {
 	/*
 	 * 디버그 레벨에 따라서 출력여부를 결정한다.
 	 * level이 높을수록 더 자세하게 정보를 출력한다.
@@ -24,6 +24,14 @@ public class Main {
     private static String line = null;
     private static int nKeys = 0;
 	
+   /*
+    * Matrix iScreen = new Matrix(createArrayScreen(iScreenDy,iScreenDx, iScreenDw));
+    * 이 방법은 좋지 않다. 이 함수가 불리는 시점에 createArrayScreen의 인자의 상태는 어떨까.. 생각..
+    * 생성자가 더 좋음.
+    */
+    
+    
+    
     int[][] test = {{1,2,3},{1,2,3},{1,2,3}};
     
     final static int[][] blockType0_degree0 = {
@@ -214,7 +222,7 @@ public class Main {
             { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
             { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
     };
-	
+
 	private static char getKey() throws IOException {
         char ch;
         if (nKeys != 0) {
@@ -250,7 +258,8 @@ public class Main {
         return array;
     }
     
-    public static void printScreen(Matrix screen) {
+    public void printScreen() {
+    	Matrix screen = oScreen;
         int dy = screen.get_dy();
         int dx = screen.get_dx();
         int dw = iScreenDw;
@@ -264,8 +273,41 @@ public class Main {
             System.out.println();
         }
     }
+    
+    private static Matrix[][] blkArray = null;
+    
+    public static void init(int[][][][] setOfBlkArrays) throws MatrixException{
+    	int nTypes = setOfBlkArrays.length;
+    	int nDegrees = setOfBlkArrays[0].length;
+    	
+    	blkArray = new Matrix[nTypes][nDegrees];
+    	
+    	for(int t = 0; t < nTypes; t++){
+    		for(int d = 0; d < nDegrees; d++){
+    			blkArray[t][d] = new Matrix(setOfBlkArrays[t][d]);
+    		}
+    	}
+    	iScreenDw = 4;	// ???
+    }
+    
+    private Matrix iScreen = null;
+    private Matrix oScreen = null;
+    private Matrix currBlk = null;
+    private int blkType = 0;
+    private int blkDegree = 0;
+    private int top;
+    private int left;
+    public Tetris(int cy, int cx) throws MatrixException{	// 생성자에서 무엇을 초기화하는가 .. 보기
+    	iScreenDy = cy;
+    	iScreenDx = cx;
+    	Matrix iScreen = new Matrix(createArrayScreen(iScreenDy,iScreenDx, iScreenDw));
+        Matrix oScreen = new Matrix(iScreen);
+        top = 0;
+        left = iScreenDw + iScreenDx/2 - 2;
+    }
+    
 
-    public static void main(String[] args) throws Exception {
+    public boolean accept(char key, int idxType) throws Exception {
         Matrix[][] setOfBlockObjects = {
         	{ new Matrix(blockType0_degree0), new Matrix(blockType0_degree1), new Matrix(blockType0_degree2), new Matrix(blockType0_degree3) },
         	{ new Matrix(blockType1_degree0), new Matrix(blockType1_degree1), new Matrix(blockType1_degree2), new Matrix(blockType1_degree3) },	
@@ -277,11 +319,18 @@ public class Main {
         };
     	
         boolean newBlockNeeded = false;
-        int top = 0;
-        int left = iScreenDw + iScreenDx/2 - 2;
-        int[][] arrayScreen = createArrayScreen(iScreenDy, iScreenDx, iScreenDw);
-        char key;
-        Matrix iScreen = new Matrix(arrayScreen);
+
+        // 게임의 상태니 위로 올림.
+        //int top = 0;
+        //int left = iScreenDw + iScreenDx/2 - 2;
+        //int[][] arrayScreen = createArrayScreen(iScreenDy, iScreenDx, iScreenDw);
+        //char key;
+        //Matrix iScreen = new Matrix(arrayScreen);
+        
+        // ???
+        blkType = idxType;
+        blkDegree = 0;
+        currBlk = blkArray[blkType][blkDegree];
         
         Random random = new Random(); // 다음 블록을 결정할 난수생성기
         int idxBlockType = random.nextInt(numberOfBlockType);
@@ -293,11 +342,11 @@ public class Main {
         Matrix currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree];	// 처음은 degree0 으로 생성한다. 
         Matrix tempBlk = iScreen.clip(top, left, top+currBlk.get_dy(), left+currBlk.get_dx());
         tempBlk = tempBlk.add(currBlk);
-        Matrix oScreen = new Matrix(iScreen);
+        // Matrix oScreen = new Matrix(iScreen);
         oScreen.paste(tempBlk, top, left);
-        printScreen(oScreen); System.out.println();
+        printScreen(); System.out.println();
 
-        while ((key = getKey()) != 'q') {
+        //while ((key = getKey()) != 'q') {
             switch (key) {
                 case 'a':
                 	if(currentDebugLevel >= debugLevel2){
@@ -385,7 +434,7 @@ public class Main {
             }
             oScreen = new Matrix(iScreen);
             oScreen.paste(tempBlk, top, left);
-            printScreen(oScreen);
+            printScreen();
             System.out.println();
             if (newBlockNeeded) {
                 iScreen = new Matrix(oScreen);
@@ -408,7 +457,7 @@ public class Main {
                 }
                 oScreen = new Matrix(iScreen);
                 oScreen.paste(tempBlk, top, left);
-                printScreen(oScreen);
+                printScreen();
                 System.out.println();
                 
                 // 여기에 FullLineDetect
@@ -425,10 +474,13 @@ public class Main {
                     }
                     oScreen = new Matrix(iScreen);
                     oScreen.paste(tempBlk, 1, iScreenDw);	// 잘랐던 블록들을 붙여넣는다. 한칸 아래로 가니까 인자 2번 1, left는 iScreenDw 
-                    printScreen(oScreen); System.out.println();
+                    printScreen(); System.out.println();
             	}
             }
-        }
+            return newBlockNeeded;
     }
+
+
+
 }
 
