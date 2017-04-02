@@ -13,7 +13,7 @@ public class Tetris {
 	 * 예) currentDebugLevel의 값이 2이면, debugLevel 1 ~ 2까지의 정보를 출력한다. (특정 이벤트 및 흐름)
 	 * 예) currentDebugLevel의 값이 1이면, debugLevel 1만 출력 ( 프로그램의 흐름에 대한 정보만 ) 
 	 */
-	private final static int currentDebugLevel = 0;	// 현재 디버그 레벨.
+	private final static int currentDebugLevel = 3;	// 현재 디버그 레벨.
 	private final static int debugLevel1 = 1;	// 프로그램의 흐름에 대한 정보. 
 	private final static int debugLevel2 = 2;	// 프로그램에서 어떠한 이벤트에 대한 정보.
 	private final static int debugLevel3 = 3;	// 특정 이벤트가 발생한 상황에서 변수의 변화 등에 대한 정보.
@@ -64,10 +64,10 @@ public class Tetris {
     				{0,0,0,0},
     			},
     			{
-    				{0,0,0,0},
-    				{0,0,0,0},
-    				{1,1,1,1},
-    				{0,0,0,0},
+    				{0,1,0,0},
+    				{0,1,0,0},
+    				{0,1,0,0},
+    				{0,1,0,0},
     			}
     		},
     		{
@@ -273,12 +273,21 @@ public class Tetris {
     
 
     /*
-     * accept의 2가지 인자.
-     * 1. 키 값 -> key
-     * 2. 난수 발생 -> idxType
-     * 난수를 발생하는 것은 Tetris 클래스 내에서 처리하지 않고, 다른 곳에서 넘겨줌.
-     * 따라서 이 함수에서는 외부의 들어온 입력에 대해서 처리를 진행함.
-     * 새로운 블록이 필요하다면(newBlockNeeded) 이것을 리턴하여, 외부에서 또 랜덤으로 난수 생성 후 넘기도록 만들자.
+     * 입력
+     * 1. 입력한 키 값 -> key
+     * 2. 난수 발생하여 들어온 블록번호 -> idxType
+     * 
+     * 목적
+     * - 게임 엔진에 불확정적인 것을 포함시키지 않기 위함. 이전 버전에서 랜덤 관련 처리 등.. 
+     * - 게임의 입력이 바뀌어도 상관없이 쓸 수 있도록.. 
+     * 
+     * 참고
+     * - 난수를 발생하는 것은 Tetris 클래스 내에서 처리하지 않고, Main 함수에서 넘겨줌.
+     * - 따라서 이 함수에서는 외부의 들어온 입력에 대해서 처리를 진행함.
+     * - 게임의 상태에 대해서 top, left, blkType, blkDegree, screen 등으로 위치, 회전, 모양, 상태 등을 저장해야함.
+     * 
+     * 리턴
+     * - 결과로 새로운 블록이 필요한지 리턴함. 
      */
     public boolean accept(char key, int idxType) throws Exception {
       
@@ -291,7 +300,7 @@ public class Tetris {
         //char key;
         //Matrix iScreen = new Matrix(arrayScreen);
         
-        blkType = idxType; // 외부에서 받아온 	
+        blkType = idxType; // 외부에서 받아온 블록 모양 	
         currBlk = setOfBlockObjects[blkType][blkDegree];
         
         // 기존의 난수 생성은 삭제한다.
@@ -327,7 +336,8 @@ public class Tetris {
                 case 'w':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록을 회전시킵니다.");
                 	blkDegree = (blkDegree + 1) % 4;
-                	currBlk = setOfBlockObjects[idxType][blkDegree];
+                	if(currentDebugLevel >= debugLevel3) System.out.println("blkDegree : " + blkDegree);
+                	currBlk = setOfBlockObjects[blkType][blkDegree];
                     break;
                 case ' ':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록을 끝까지 내립니다.");
@@ -366,7 +376,7 @@ public class Tetris {
                     	if(currentDebugLevel >= debugLevel2) System.out.println("블록이 회전 과정에서 충돌하였음. 이전으로 돌아감");
                     	blkDegree = blkDegree - 1;	// Degree를 이전으로 돌림.
                     	if(blkDegree == -1) blkDegree = 3; // 회전 : 3 -> 0 , 충돌 : 0 -> -1 케이스니 3으로 되돌림.
-                    	currBlk = setOfBlockObjects[idxType][blkDegree];
+                    	currBlk = setOfBlockObjects[blkType][blkDegree];
                         break;
                     case ' ':
                     	// 이미 충돌된 상태임. top을 하나 빼주어 충돌 직전 위치로 이동. 
@@ -415,10 +425,11 @@ public class Tetris {
             	// findFullLine 함수는 fullLine인 줄의 number를 리턴함. fullLine이 없다면 -1을 리턴함.
         	}
         	
-        	if(newBlockNeeded){
-        		iScreen = new Matrix(oScreen);
-        		top = 0;
+        	if(newBlockNeeded){	// 새로운 블록이 필요한 경우라면..
+        		iScreen = new Matrix(oScreen);	// 마지막 상태 iScreen에 저장.
+        		top = 0;	
                 left = iScreenDw + iScreenDx/2 - 2;
+                blkDegree = 0;	// 각도 0으로.
         	}
         	
             return newBlockNeeded;
