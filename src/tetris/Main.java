@@ -13,7 +13,7 @@ public class Main {
 	 * 예) currentDebugLevel의 값이 2이면, debugLevel 1 ~ 2까지의 정보를 출력한다. (특정 이벤트 및 흐름)
 	 * 예) currentDebugLevel의 값이 1이면, debugLevel 1만 출력 ( 프로그램의 흐름에 대한 정보만 ) 
 	 */
-	private final static int currentDebugLevel = 3;	// 현재 디버그 레벨.
+	private final static int currentDebugLevel = 0;	// 현재 디버그 레벨.
 	private final static int debugLevel1 = 1;	// 프로그램의 흐름에 대한 정보. 
 	private final static int debugLevel2 = 2;	// 프로그램에서 어떠한 이벤트에 대한 정보.
 	private final static int debugLevel3 = 3;	// 특정 이벤트가 발생한 상황에서 변수의 변화 등에 대한 정보.
@@ -524,36 +524,27 @@ public class Main {
         	fullLine = oScreen.findFullLine(iScreenDw); 
         	if(currentDebugLevel >= debugLevel3) System.out.println("FullLine검사, 해당되는 라인(-1이라면 없음) : " + fullLine);
         	// findFullLine 함수는 fullLine인 줄의 number를 리턴함. fullLine이 없다면 -1을 리턴함.
-        	while(fullLine > 0){	// fullLine이 검출된 경우
+        	while(fullLine > 0){	// fullLine이 검출된 경우, 루프를 돌면서 FullLine이 사라질 때까지 검사.
         		
         		// 잘라내는 작업.
                 //tempBlk = oScreen.clip(0, iScreenDw, fullLine, iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽은 복사 안함.
         		tempBlk = oScreen.clip(0, 0, fullLine, 2*iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽 포함.
-        		
         		// 자른 블록 표시.
                 if(currentDebugLevel >= debugLevel3) tempBlk.print();	
-                
                 // 붙이는 작업.
                 //oScreen.paste(tempBlk, 1, iScreenDw);	// 잘랐던 블록들을 붙여넣는다. 한칸 아래로 가니까 인자 2번 1, left는 iScreenDw
                 oScreen.paste(tempBlk, 1, 0);	// 잘랐던 블록들을 붙여넣는다. 벽 포함.
-                printScreen(oScreen); System.out.println();        
+                //printScreen(oScreen); System.out.println();        
                 
                 
-                /*
-                System.out.println("맨 윗줄 처리.");
+                // 맨 윗줄 처리와 관련된 부분이다.
+                if(currentDebugLevel >= debugLevel3) System.out.println("맨 윗줄 처리.");
                 // ?? 한칸 내려오면 맨 윗칸은 모두 0으로 바꿔야함.
-                int[][] emptyLine = createArrayScreen(1, iScreenDx, 0);	// 빈 라인을 생성.  
+                int[][] emptyLine = createArrayScreen(1,iScreenDx, 0);	// 빈 라인을 생성. 인자 -> dy, dx, dw  
                 Matrix emptyLineMatrix = new Matrix(emptyLine);
                 if(currentDebugLevel >= debugLevel3) emptyLineMatrix.print();
-                                
-                tempBlk = iScreen.clip(0, iScreenDw, 0, iScreenDw + iScreenDx);
-                if(currentDebugLevel >= debugLevel3) tempBlk.print();	// 자른 블록 표시.
-                
-                oScreen = new Matrix(iScreen);
-                oScreen.paste(tempBlk, 0, iScreenDw);	
-               
+                oScreen.paste(emptyLineMatrix, 0, iScreenDw); // 빈 라인을 맨 윗줄에 붙인다.	
                 printScreen(oScreen); System.out.println();
-                */
                 
                 // 한번에 여러 줄이 삭제될 수도 있음. 따라서 계속 검사.
                 fullLine = oScreen.findFullLine(iScreenDw); 
