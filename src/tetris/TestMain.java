@@ -246,11 +246,13 @@ public class TestMain {
         while((key = getKey()) != 'q'){
         	newBlockNeeded = board.accept(key, idxType);
         	board.printScreen(); System.out.println();
+        	
+        	// 새로운 블록이 필요하지 않다면 idxType을 계속 저장하여 유지한다. degree는 Tetris 클래스에서 내부적으로 저장.
         	if (newBlockNeeded) {
         		idxType = random.nextInt(7);
         		newBlockNeeded = board.accept('0', idxType);
         		board.printScreen(); System.out.println();
-        		if (newBlockNeeded) break;	// 게임종료.
+        		if (newBlockNeeded) break;	// 새 블록이 필요한 상태에서 또 중복되었다면 게임종료.
         	}
         }
         System.out.println("Program terminated!");

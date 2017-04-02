@@ -276,7 +276,9 @@ public class Tetris {
      * accept의 2가지 인자.
      * 1. 키 값 -> key
      * 2. 난수 발생 -> idxType
-     * 난수를 발생하는 것은 Tetris 클래스 내에서 처리하지 않고, 다른 곳에서 처리하기 위함.
+     * 난수를 발생하는 것은 Tetris 클래스 내에서 처리하지 않고, 다른 곳에서 넘겨줌.
+     * 따라서 이 함수에서는 외부의 들어온 입력에 대해서 처리를 진행함.
+     * 새로운 블록이 필요하다면(newBlockNeeded) 이것을 리턴하여, 외부에서 또 랜덤으로 난수 생성 후 넘기도록 만들자.
      */
     public boolean accept(char key, int idxType) throws Exception {
       
@@ -289,26 +291,23 @@ public class Tetris {
         //char key;
         //Matrix iScreen = new Matrix(arrayScreen);
         
-        // ???
-        blkType = idxType;
-        blkDegree = 0;
+        blkType = idxType; // 외부에서 받아온 	
         currBlk = setOfBlockObjects[blkType][blkDegree];
         
         // 기존의 난수 생성은 삭제한다.
-        Random random = new Random(); // 다음 블록을 결정할 난수생성기
-        int idxBlockType = random.nextInt(numberOfBlockType);
+        //Random random = new Random(); // 다음 블록을 결정할 난수생성기
+        //int idxBlockType = random.nextInt(numberOfBlockType);
         
-        int idxBlockDegree = 0;	// 각도는 처음에 0으로 블록을 생성함.
         if(currentDebugLevel >= debugLevel3){
-        	System.out.println("다음 블록 번호 : " + idxBlockType);
+        	System.out.println("다음 블록 번호 : " + blkType);
         }
         //다음 블록을 생성한다. 
-        Matrix currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree];	// 처음은 degree0 으로 생성한다.
+        Matrix currBlk = setOfBlockObjects[blkType][blkDegree];	
         Matrix tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx());
         tempBlk = tempBlk.add(currBlk);
         // Matrix oScreen = new Matrix(iScreen);
         oScreen.paste(tempBlk, top, left);
-        printScreen(); System.out.println();
+        //printScreen(); System.out.println();
 
         //while ((key = getKey()) != 'q') {
             switch (key) {
@@ -327,8 +326,8 @@ public class Tetris {
                     break;
                 case 'w':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록을 회전시킵니다.");
-                	idxBlockDegree = (idxBlockDegree + 1) % 4;
-                	currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree];
+                	blkDegree = (blkDegree + 1) % 4;
+                	currBlk = setOfBlockObjects[idxType][blkDegree];
                     break;
                 case ' ':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록을 끝까지 내립니다.");
@@ -365,9 +364,9 @@ public class Tetris {
                         break;
                     case 'w':
                     	if(currentDebugLevel >= debugLevel2) System.out.println("블록이 회전 과정에서 충돌하였음. 이전으로 돌아감");
-                    	idxBlockDegree = idxBlockDegree - 1;	// Degree를 이전으로 돌림.
-                    	if(idxBlockDegree == -1) idxBlockDegree = 3; // 회전 : 3 -> 0 , 충돌 : 0 -> -1 케이스니 3으로 되돌림.
-                    	currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree];
+                    	blkDegree = blkDegree - 1;	// Degree를 이전으로 돌림.
+                    	if(blkDegree == -1) blkDegree = 3; // 회전 : 3 -> 0 , 충돌 : 0 -> -1 케이스니 3으로 되돌림.
+                    	currBlk = setOfBlockObjects[idxType][blkDegree];
                         break;
                     case ' ':
                     	// 이미 충돌된 상태임. top을 하나 빼주어 충돌 직전 위치로 이동. 
@@ -381,8 +380,7 @@ public class Tetris {
             }
             oScreen = new Matrix(iScreen);
             oScreen.paste(tempBlk, top, left);
-            printScreen();
-            System.out.println();
+            //printScreen(); System.out.println();
           
             // 여기에 FullLineDetect 
         	int fullLine;
@@ -409,39 +407,20 @@ public class Tetris {
                 Matrix emptyLineMatrix = new Matrix(emptyLine);
                 if(currentDebugLevel >= debugLevel3) emptyLineMatrix.print();
                 oScreen.paste(emptyLineMatrix, 0, iScreenDw); // 빈 라인을 맨 윗줄에 붙인다.	
-                printScreen(); System.out.println();
+                // printScreen(); System.out.println();
                 
                 // 한번에 여러 줄이 삭제될 수도 있음. 따라서 계속 검사.
                 fullLine = oScreen.findFullLine(iScreenDw); 
             	if(currentDebugLevel >= debugLevel3) System.out.println("FullLine검사, 해당되는 라인(-1이라면 없음) : " + fullLine);
             	// findFullLine 함수는 fullLine인 줄의 number를 리턴함. fullLine이 없다면 -1을 리턴함.
         	}
-            
-            
-            if (newBlockNeeded) {
-                iScreen = new Matrix(oScreen);
-                top = 0;
-                left = iScreenDw + iScreenDx / 2 - 2;
-                newBlockNeeded = false;
-               
-                random = new Random(); // 다음 블록을 결정할 난수생성기
-                idxBlockType = random.nextInt(numberOfBlockType);
-                idxBlockDegree = 0; // 각도 초기화.
-                if(currentDebugLevel >= debugLevel3) System.out.println("다음 블록 번호 : " + idxBlockType);
-                
-                currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree]; // 처음은 degree0으로 생성한다.
-                tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx());
-                tempBlk = tempBlk.add(currBlk);
-                if (tempBlk.anyGreaterThan(1)){
-                	System.out.println("Game Over!");
-                	System.exit(0);
-                }
-                oScreen = new Matrix(iScreen);
-                oScreen.paste(tempBlk, top, left);
-                printScreen();
-                System.out.println();
-            //}
-            }
+        	
+        	if(newBlockNeeded){
+        		iScreen = new Matrix(oScreen);
+        		top = 0;
+                left = iScreenDw + iScreenDx/2 - 2;
+        	}
+        	
             return newBlockNeeded;
     }
 }
