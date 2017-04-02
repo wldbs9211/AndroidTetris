@@ -20,6 +20,11 @@ public class Main {
 	
 	private final static int numberOfBlockType = 7;	// 블록의 종류
 	
+	// 스크린 관련 
+	private static int iScreenDy = 15;
+    private static int iScreenDx = 10;
+    private static int iScreenDw = 4;	// 벽 두께
+	
 	private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     private static String line = null;
     private static int nKeys = 0;
@@ -380,10 +385,6 @@ public class Main {
         return ch;
     }
 	
-    private static int iScreenDy = 15;
-    private static int iScreenDx = 10;
-    private static int iScreenDw = 4;
-    
     private static int[][] createArrayScreen(int dy, int dx, int dw) {
         int y, x;
         int[][] array = new int[dy + dw][dx + 2 * dw];
@@ -517,34 +518,47 @@ public class Main {
             oScreen.paste(tempBlk, top, left);
             printScreen(oScreen);
             System.out.println();
-            
+          
             // 여기에 FullLineDetect 
         	int fullLine;
         	fullLine = oScreen.findFullLine(iScreenDw); 
         	if(currentDebugLevel >= debugLevel3) System.out.println("FullLine검사, 해당되는 라인(-1이라면 없음) : " + fullLine);
         	// findFullLine 함수는 fullLine인 줄의 number를 리턴함. fullLine이 없다면 -1을 리턴함.
-        	if(fullLine > 0){	// fullLine이 검출된 경우
-                //tempBlk = iScreen.clip(0, iScreenDw, fullLine, iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽은 복사 안함.
-        		tempBlk = iScreen.clip(0, 0, fullLine, 2*iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽 포함.
-                if(currentDebugLevel >= debugLevel3){
-                	tempBlk.print();	// 자른 블록 표시.
-                }
-                oScreen = new Matrix(iScreen);
+        	while(fullLine > 0){	// fullLine이 검출된 경우
+        		
+        		// 잘라내는 작업.
+                //tempBlk = oScreen.clip(0, iScreenDw, fullLine, iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽은 복사 안함.
+        		tempBlk = oScreen.clip(0, 0, fullLine, 2*iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽 포함.
+        		
+        		// 자른 블록 표시.
+                if(currentDebugLevel >= debugLevel3) tempBlk.print();	
+                
+                // 붙이는 작업.
                 //oScreen.paste(tempBlk, 1, iScreenDw);	// 잘랐던 블록들을 붙여넣는다. 한칸 아래로 가니까 인자 2번 1, left는 iScreenDw
                 oScreen.paste(tempBlk, 1, 0);	// 잘랐던 블록들을 붙여넣는다. 벽 포함.
+                printScreen(oScreen); System.out.println();        
+                
                 
                 /*
-                // ?? Clip하면 맨 윗칸은 모두 0으로 바꾸어주어야함. 처리 필요.
-                int[][] emptyLine = createArrayScreen(1, iScreenDx, 0);  
+                System.out.println("맨 윗줄 처리.");
+                // ?? 한칸 내려오면 맨 윗칸은 모두 0으로 바꿔야함.
+                int[][] emptyLine = createArrayScreen(1, iScreenDx, 0);	// 빈 라인을 생성.  
                 Matrix emptyLineMatrix = new Matrix(emptyLine);
+                if(currentDebugLevel >= debugLevel3) emptyLineMatrix.print();
+                                
                 tempBlk = iScreen.clip(0, iScreenDw, 0, iScreenDw + iScreenDx);
-                if(currentDebugLevel >= debugLevel3){
-                	tempBlk.print();	// 자른 블록 표시.
-                }
+                if(currentDebugLevel >= debugLevel3) tempBlk.print();	// 자른 블록 표시.
+                
                 oScreen = new Matrix(iScreen);
-                oScreen.paste(tempBlk, 0, iScreenDw);	// 잘랐던 블록들을 붙여넣는다. 한칸 아래로 가니까 인자 2번 1, left는 iScreenDw
-                */
+                oScreen.paste(tempBlk, 0, iScreenDw);	
+               
                 printScreen(oScreen); System.out.println();
+                */
+                
+                // 한번에 여러 줄이 삭제될 수도 있음. 따라서 계속 검사.
+                fullLine = oScreen.findFullLine(iScreenDw); 
+            	if(currentDebugLevel >= debugLevel3) System.out.println("FullLine검사, 해당되는 라인(-1이라면 없음) : " + fullLine);
+            	// findFullLine 함수는 fullLine인 줄의 number를 리턴함. fullLine이 없다면 -1을 리턴함.
         	}
             
             
