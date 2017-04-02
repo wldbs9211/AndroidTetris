@@ -540,18 +540,32 @@ public class Main {
                 printScreen(oScreen);
                 System.out.println();
                 
-                // 여기에 FullLineDetect
+                // 여기에 FullLineDetect 
             	int fullLine;
             	fullLine = oScreen.findFullLine(iScreenDw); 
             	if(currentDebugLevel >= debugLevel3) System.out.println("FullLine검사, 해당되는 라인(-1이라면 없음) : " + fullLine);
             	// findFullLine 함수는 fullLine인 줄의 number를 리턴함. fullLine이 없다면 -1을 리턴함.
-            	if(fullLine > 0){	// fullLine이 검출된 경
-                    tempBlk = iScreen.clip(0, iScreenDw, fullLine, iScreenDw + iScreenDx);	 // fullLine위로 모두 잘라낸다.  
+            	if(fullLine > 0){	// fullLine이 검출된 경우
+                    //tempBlk = iScreen.clip(0, iScreenDw, fullLine, iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽은 복사 안함.
+            		tempBlk = iScreen.clip(0, 0, fullLine, 2*iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽 포함.
                     if(currentDebugLevel >= debugLevel3){
                     	tempBlk.print();	// 자른 블록 표시.
                     }
                     oScreen = new Matrix(iScreen);
-                    oScreen.paste(tempBlk, 1, iScreenDw);	// 잘랐던 블록들을 붙여넣는다. 한칸 아래로 가니까 인자 2번 1, left는 iScreenDw 
+                    //oScreen.paste(tempBlk, 1, iScreenDw);	// 잘랐던 블록들을 붙여넣는다. 한칸 아래로 가니까 인자 2번 1, left는 iScreenDw
+                    oScreen.paste(tempBlk, 1, 0);	// 잘랐던 블록들을 붙여넣는다. 벽 포함.
+                    
+                    /*
+                    // ?? Clip하면 맨 윗칸은 모두 0으로 바꾸어주어야함. 처리 필요.
+                    int[][] emptyLine = createArrayScreen(1, iScreenDx, 0);  
+                    Matrix emptyLineMatrix = new Matrix(emptyLine);
+                    tempBlk = iScreen.clip(0, iScreenDw, 0, iScreenDw + iScreenDx);
+                    if(currentDebugLevel >= debugLevel3){
+                    	tempBlk.print();	// 자른 블록 표시.
+                    }
+                    oScreen = new Matrix(iScreen);
+                    oScreen.paste(tempBlk, 0, iScreenDw);	// 잘랐던 블록들을 붙여넣는다. 한칸 아래로 가니까 인자 2번 1, left는 iScreenDw
+                    */
                     printScreen(oScreen); System.out.println();
             	}
             }

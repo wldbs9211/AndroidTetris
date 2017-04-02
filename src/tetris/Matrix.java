@@ -9,7 +9,7 @@ public class Matrix {
 	 * 예) currentDebugLevel의 값이 2이면, debugLevel 1 ~ 2까지의 정보를 출력한다. (특정 이벤트 및 흐름)
 	 * 예) currentDebugLevel의 값이 1이면, debugLevel 1만 출력 ( 프로그램의 흐름에 대한 정보만 ) 
 	 */
-	private final static int currentDebugLevel = 0;	// 현재 디버그 레벨.
+	private final static int currentDebugLevel = 3;	// 현재 디버그 레벨.
 	private final static int debugLevel1 = 1;	// 프로그램의 흐름에 대한 정보. 
 	private final static int debugLevel2 = 2;	// 프로그램에서 어떠한 이벤트에 대한 정보.
 	private final static int debugLevel3 = 3;	// 특정 이벤트가 발생한 상황에서 변수의 변화 등에 대한 정보.
@@ -123,24 +123,16 @@ public class Matrix {
 	}
 	public int findFullLine(int screenDw){
     	for(int i = dy - screenDw - 1; i >= 0; i--){	// 바닥에서 위로 올라오며 검사한다.
-    		if(currentDebugLevel >= debugLevel3){
-    			System.out.println("풀라인 검사 : " + i + "번 행." );
-        	}
-    		boolean fullLineFlag = true;
-    		for(int j = screenDw - 1; j < dx - screenDw - 1; j++ ){
-        		if(currentDebugLevel >= debugLevel3){
-        			System.out.println("풀라인 검사 : " + j + "번 열." );
-        		}
+    		if(currentDebugLevel >= debugLevel3) System.out.println("풀라인 검사 : " + i + "번 행." );
+    		boolean fullLineFlag = true; // FullLine이 검출되었는가 검사하는 flag
+    		for(int j = screenDw; j < dx - screenDw; j++ ){
+        		if(currentDebugLevel >= debugLevel3) System.out.println("풀라인 검사 : " + j + "번 열." );
     			if(array[i][j] == 0){
-    				if(currentDebugLevel >= debugLevel3){
-    					System.out.println("FullLine 아님." );
-    				}
+    				if(currentDebugLevel >= debugLevel3) System.out.println("FullLine 아님." );
     				fullLineFlag = false;
     			}
     		}
-    		if(currentDebugLevel >= debugLevel3){
-    			System.out.println(i + "번 행은 FullLine? : " + fullLineFlag);
-    		}
+    		if(currentDebugLevel >= debugLevel3) System.out.println(i + "번 행은 FullLine? : " + fullLineFlag);
     		if(fullLineFlag == true) return i;	// 가장 먼저 만나는 FullLine을 리턴한다.
     	}
     	return -1; // -1을 리턴하는 경우라면 FullLine이 없다는 것임.
