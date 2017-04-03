@@ -239,7 +239,6 @@ public class TestMain {
         boolean newBlockNeeded;
         TetrisState state;
         
-        
         Tetris.init(setOfBlockArrays);	// static method임. 객체를 생성한 적이 없지만 바로 접근이 가능. 공유, 정적
         
         Tetris board = new Tetris(15, 10);	// 이것은 공유하지 않음. 동적
@@ -253,6 +252,18 @@ public class TestMain {
         board.printScreen(); System.out.println();
         //board2.printScreen(); System.out.println();
         
+        while((key = getKey()) != 'q'){
+        	state = board.accept(key);        	
+        	board.printScreen(); System.out.println();
+        	if (state == TetrisState.NewBlock){
+        		key = (char) ('0' + random.nextInt(7));
+        		state = board.accept(key);
+        		board.printScreen(); System.out.println();
+        		if(state == TetrisState.End) break;	// GameOver
+        	}
+        }
+        
+        /*
         while((key = getKey()) != 'q'){
         	newBlockNeeded = board.accept(key);
         	//board2.accept(key, idxType);	//board , board2에 동일한 key 전달
@@ -275,7 +286,8 @@ public class TestMain {
         		}
         	}
         }
-        System.out.println("Program terminated!");
+        */
+        System.out.println("Game Over!");
     }
 }
 

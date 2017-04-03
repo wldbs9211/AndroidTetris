@@ -3,7 +3,6 @@ package tetris;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Random;
 
 enum TetrisState{
 	Start(0), Running(1), NewBlock(2), End(3), Error(4);
@@ -288,17 +287,6 @@ public class Tetris {
         tetrisState = TetrisState.Start;
     }
     
-    
-    /*	입력 : key
-     *	기능 : 키가 새로운 블록을 요청하는 키인지, 현재 블록을 조작하는 키인지 판별.
-     *		  0 ~ numberOfBlockTypes에 해당하는 숫자가 들어오면 새로운 블록을 요청하는 키임.
-     *	출력 : 새로운 블록을 요청하는 키라면 True 리턴, 조작 혹은 잘못된 키라면 False리턴.
-     */ 
-    public boolean isKeyNewBlock(char key){	
-    	int intKeyValue = key - '0';	
-    	return (0 <= intKeyValue) && (intKeyValue < numberOfBlockTypes); 
-    }
-    
     /*
      * 입력
      * 1. 입력한 키 값 -> key
@@ -316,45 +304,22 @@ public class Tetris {
      * 리턴
      * - 결과로 새로운 블록이 필요한지 리턴함. 
      */
-    public boolean accept(char key) throws Exception {
+    public TetrisState accept(char key) throws Exception {
         boolean newBlockNeeded = false;
         int idxType;
         
-        /*
-         *  일단 키가 들어오면 NewBlock(새 블록) / Running(그 외의 키) 로 분류한다.
-         *  여기서 예외 키 처리를 해버리면 새로운 키가 추가되는 경우 하나하나 처리가 복잡.. 
-         *  Running 상태에서 switch 문을 사용하니 거기서 State Error를 분류한다.  
-         */
-        if(currentDebugLevel >= debugLevel3) System.out.println("isKeyNewBlock : " + isKeyNewBlock(key));
-        if(isKeyNewBlock(key)) tetrisState = TetrisState.NewBlock;	// 새로운 블록을 요청하는 키라면 NewBlock 상태로.
-        else tetrisState = TetrisState.Running;	// 그것이 아니라면 Running 상태로 변경하여 조작을 한다.
+        System.out.println("State : " + tetrisState);
+        System.out.println("key : " + key);
         
-        if(currentDebugLevel >= debugLevel3) System.out.println("tetrisState : " + tetrisState.value() );
-        
-        switch(tetrisState.value()){	// Start(0), Running(1), NewBlock(2), End(3), Error(4)
-        	case 0 :	
-        		if(currentDebugLevel >= debugLevel2) System.out.println("Start 상태에 대해 accept 함수를 진행합니다.");
-        		break;
-        	case 1 :
-        		if(currentDebugLevel >= debugLevel2) System.out.println("Running 상태에 대해 accept 함수를 진행합니다.");
-        		break;
-        	case 2 :
-        		if(currentDebugLevel >= debugLevel2) System.out.println("NewBlock 상태에 대해 accept 함수를 진행합니다.");
-        		break;
-        	case 3 :
-        		if(currentDebugLevel >= debugLevel2) System.out.println("End 상태에 대해 accept 함수를 진행합니다.");
-        		break;
-        	case 4 :
-        		if(currentDebugLevel >= debugLevel2) System.out.println("Error 상태에 대해 accept 함수를 진행합니다.");
-        		break;
-        	default :
-        		if(currentDebugLevel >= debugLevel2) System.out.println("잘못된 key 값이 들어왔습니다.");
-        		tetrisState = TetrisState.Error;
-        		break;
+        // Start 혹은 NewBlock 상태에서만 현재 블록을 변경시킴, 나머지는 조작 상태이기 때문에 idxType을 바꿀 필요가 없음.
+        if(tetrisState == TetrisState.Start || tetrisState == TetrisState.NewBlock){
+        	idxType = key - '0';
+        	if(currentDebugLevel >= debugLevel3) System.out.println("idxType : " + idxType);
+        	
+        	blkType = idxType; // 외부에서 받아온 블록 모양 	
+            currBlk = setOfBlockObjects[blkType][blkDegree];
+            tetrisState = TetrisState.Running;	// 상태는 Running으로 변경.
         }
-        
-        idxType = key - '0';
-        if(currentDebugLevel >= debugLevel3) System.out.println("idxType : " + idxType);
 
         // 게임의 상태니 위로 올림.
         //int top = 0;
@@ -363,15 +328,11 @@ public class Tetris {
         //char key;
         //Matrix iScreen = new Matrix(arrayScreen);
         
-        blkType = idxType; // 외부에서 받아온 블록 모양 	
-        currBlk = setOfBlockObjects[blkType][blkDegree];
-        
         // 기존의 난수 생성은 삭제한다.
         //Random random = new Random(); // 다음 블록을 결정할 난수생성기
         //int idxBlockType = random.nextInt(numberOfBlockType);
         
         if(currentDebugLevel >= debugLevel3) System.out.println("다음 블록 번호 : " + blkType);
-        
         //다음 블록을 생성한다. 
         Matrix currBlk = setOfBlockObjects[blkType][blkDegree];	
         Matrix tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx());
@@ -380,7 +341,7 @@ public class Tetris {
         // 이 부분을 추가하는 이유는 블록이 생성되자마자 다른 블록과 충돌(게임오버 조건) 검사하기 위함임. 여기서 검사하지 않으면 화면에 x자가 출력된다. 아래 부분을 실행 말고 종료.
         if(tempBlk.anyGreaterThan(1)){
         	tetrisState = TetrisState.End;
-        	return true;
+        	return tetrisState;
         }
         
         // Matrix oScreen = new Matrix(iScreen);
@@ -421,11 +382,12 @@ public class Tetris {
                     }
                     // 여기까지 왔다면 블록은 현재 충돌된 상태임. 아래 최종 작업에서 top을 하나 빼주어야함.
                     break;
-                case '0':
-                	if(currentDebugLevel >= debugLevel2) System.out.println("처음 시작");
-                	break;
                 default:
+                	// ?? 여기가 자꾸 실행되네.. 조건 아닌뎅..
+                	System.out.println("뭐야 이건..");
                 	if(currentDebugLevel >= debugLevel2) System.out.println("잘못된 키의 입력!");
+                	tetrisState = TetrisState.Error;
+                	return tetrisState;	// 에러인 경우에는 아래를 실행하지 않고 끝내자.
             }
             tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx());
             tempBlk = tempBlk.add(currBlk);
@@ -504,9 +466,9 @@ public class Tetris {
         		top = 0;	
                 left = iScreenDw + iScreenDx/2 - 2;
                 blkDegree = 0;	// 각도 0으로.
+                tetrisState = TetrisState.NewBlock;	
         	}
         	
-            return newBlockNeeded;
+            return tetrisState;
     }
 }
-
