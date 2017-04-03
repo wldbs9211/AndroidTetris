@@ -238,21 +238,32 @@ public class TestMain {
         int idxType;
         boolean newBlockNeeded;
         Tetris.init(setOfBlockArrays);	// static method임. 객체를 생성한 적이 없지만 바로 접근이 가능. 공유, 정적
+        
         Tetris board = new Tetris(15, 10);	// 이것은 공유하지 않음. 동적
+        Tetris board2 = new Tetris(15, 12);	// 복수 객체 검증을 위함.
+        
         Random random = new Random();
         idxType = random.nextInt(7);
         board.accept('0', idxType);
+        board2.accept('0', idxType);	//board , board2에 동일한 key 전달
         board.printScreen(); System.out.println();
+        board2.printScreen(); System.out.println();
         
         while((key = getKey()) != 'q'){
         	newBlockNeeded = board.accept(key, idxType);
+        	board2.accept(key, idxType);	//board , board2에 동일한 key 전달
+        	
         	board.printScreen(); System.out.println();
+        	board2.printScreen(); System.out.println();
         	
         	// 새로운 블록이 필요하지 않다면 idxType을 계속 저장하여 유지한다. degree는 Tetris 클래스에서 내부적으로 저장.
         	if (newBlockNeeded) {
         		idxType = random.nextInt(7);
         		newBlockNeeded = board.accept('0', idxType);
+        		board2.accept('0', idxType); //board , board2에 동일한 key 전달
+        		
         		board.printScreen(); System.out.println();
+        		board2.printScreen(); System.out.println();
         		if (newBlockNeeded){ // 새 블록이 필요한 상태에서 또 중복되었다면 게임종료.
         			System.out.println("Game Over!");
                 	System.exit(0);

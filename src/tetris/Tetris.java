@@ -21,8 +21,8 @@ public class Tetris {
 	
 	private final static int numberOfBlockType = 7;	// 블록의 종류
 	
-	private static int iScreenDy = 15;
-    private static int iScreenDx = 10;
+	private static int iScreenDy;
+    private static int iScreenDx;
     private static int iScreenDw = 4;
 	
 	private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -410,18 +410,25 @@ public class Tetris {
         	// findFullLine 함수는 fullLine인 줄의 number를 리턴함. fullLine이 없다면 -1을 리턴함.
         	while(fullLine > 0){	// fullLine이 검출된 경우, 루프를 돌면서 FullLine이 사라질 때까지 검사.
         		// 잘라내는 작업.
-                //tempBlk = oScreen.clip(0, iScreenDw, fullLine, iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽은 복사 안함.
-        		tempBlk = oScreen.clip(0, 0, fullLine, 2*iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽 포함.
+        		if(currentDebugLevel >= debugLevel3) System.out.println("iScreenDw : " + iScreenDw + " iScreenDx : " + iScreenDx);
+                tempBlk = oScreen.clip(0, iScreenDw, fullLine, iScreenDw + iScreenDx);	 // 세로 : 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 가로 : 벽은 복사 안함.
+        		// 겉으로는 동작을 하나 사용하지 않는다.
+                // tempBlk = oScreen.clip(0, 0, fullLine, 2*iScreenDw + iScreenDx);	 // 세로 : 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 가로 : 벽 포함.
+                // -> 아래 주석된 부분은 복수 객체 검증에서 에러가 발생. 이유는 iScreenDx가 static이기 때문에 screenDx가 다른 객체가 만들어지면 영향을 줌. 
+                
         		// 자른 블록 표시.
                 if(currentDebugLevel >= debugLevel3) tempBlk.print();	
                 // 붙이는 작업.
-                //oScreen.paste(tempBlk, 1, iScreenDw);	// 잘랐던 블록들을 붙여넣는다. 한칸 아래로 가니까 인자 2번 1, left는 iScreenDw
-                oScreen.paste(tempBlk, 1, 0);	// 잘랐던 블록들을 붙여넣는다. 벽 포함.
+                oScreen.paste(tempBlk, 1, iScreenDw);	// 잘랐던 블록들을 붙여넣는다. 한칸 아래로 가니까 인자 2번 1, left는 iScreenDw
+        		// 겉으로는 동작을 하나 사용하지 않는다.
+                //oScreen.paste(tempBlk, 1, 0);	// 잘랐던 블록들을 붙여넣는다. 벽 포함.
+                // -> 아래 주석된 부분은 복수 객체 검증에서 에러가 발생.
+                
                 //printScreen(oScreen); System.out.println();        
                 
                 // 맨 윗줄 처리와 관련된 부분이다.
                 if(currentDebugLevel >= debugLevel3) System.out.println("맨 윗줄 처리.");
-                // ?? 한칸 내려오면 맨 윗칸은 모두 0으로 바꿔야함.
+                // 한칸 내려오면 맨 윗칸은 모두 0으로 바꿔야함.
                 int[][] emptyLine = createArrayScreen(1,iScreenDx, 0);	// 빈 라인을 생성. 인자 -> dy, dx, dw  
                 Matrix emptyLineMatrix = new Matrix(emptyLine);
                 if(currentDebugLevel >= debugLevel3) emptyLineMatrix.print();
