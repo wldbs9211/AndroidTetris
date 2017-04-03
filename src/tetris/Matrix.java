@@ -7,7 +7,8 @@ public class Matrix {
 	 * level이 높을수록 더 자세하게 정보를 출력한다.
 	 * 예) currentDebugLevel의 값이 3이면, 모든 정보를 출력한다. 
 	 * 예) currentDebugLevel의 값이 2이면, debugLevel 1 ~ 2까지의 정보를 출력한다. (특정 이벤트 및 흐름)
-	 * 예) currentDebugLevel의 값이 1이면, debugLevel 1만 출력 ( 프로그램의 흐름에 대한 정보만 ) 
+	 * 예) currentDebugLevel의 값이 1이면, debugLevel 1만 출력 ( 프로그램의 흐름에 대한 정보만 )
+	 * 예) currentDebugLevel의 값이 0이면, 아무것도 출력하지 않음. 
 	 */
 	private final static int currentDebugLevel = 0;	// 현재 디버그 레벨.
 	private final static int debugLevel1 = 1;	// 프로그램의 흐름에 대한 정보. 
@@ -121,6 +122,13 @@ public class Matrix {
 	      System.out.println();
 	   }
 	}
+	
+	/*	입력 : screenDw(벽의 길이)
+	 *	기능 : Matrix Class에서 바닥부터 올라오며 가장 먼저 FullLine을 만족하는 행을 리턴함.
+	 *	출력 : 가장 먼저 FullLine을 만족하는 행의 숫자(int)
+	 *  	  FullLine을 만족하는 행이 없다면 -1을 리턴
+	 */
+	
 	public int findFullLine(int screenDw){
     	for(int i = dy - screenDw - 1; i >= 0; i--){	// 바닥에서 위로 올라오며 검사한다.
     		if(currentDebugLevel >= debugLevel3) System.out.println("풀라인 검사 : " + i + "번 행." );

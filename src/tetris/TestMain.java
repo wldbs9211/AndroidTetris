@@ -11,9 +11,10 @@ public class TestMain {
 	 * level이 높을수록 더 자세하게 정보를 출력한다.
 	 * 예) currentDebugLevel의 값이 3이면, 모든 정보를 출력한다. 
 	 * 예) currentDebugLevel의 값이 2이면, debugLevel 1 ~ 2까지의 정보를 출력한다. (특정 이벤트 및 흐름)
-	 * 예) currentDebugLevel의 값이 1이면, debugLevel 1만 출력 ( 프로그램의 흐름에 대한 정보만 ) 
+	 * 예) currentDebugLevel의 값이 1이면, debugLevel 1만 출력 ( 프로그램의 흐름에 대한 정보만 )
+	 * 예) currentDebugLevel의 값이 0이면, 아무것도 출력하지 않음. 
 	 */
-	private final static int currentDebugLevel = 3;	// 현재 디버그 레벨.
+	private final static int currentDebugLevel = 0;	// 현재 디버그 레벨.
 	private final static int debugLevel1 = 1;	// 프로그램의 흐름에 대한 정보. 
 	private final static int debugLevel2 = 2;	// 프로그램에서 어떠한 이벤트에 대한 정보.
 	private final static int debugLevel3 = 3;	// 특정 이벤트가 발생한 상황에서 변수의 변화 등에 대한 정보.
@@ -252,7 +253,10 @@ public class TestMain {
         		idxType = random.nextInt(7);
         		newBlockNeeded = board.accept('0', idxType);
         		board.printScreen(); System.out.println();
-        		if (newBlockNeeded) break;	// 새 블록이 필요한 상태에서 또 중복되었다면 게임종료.
+        		if (newBlockNeeded){ // 새 블록이 필요한 상태에서 또 중복되었다면 게임종료.
+        			System.out.println("Game Over!");
+                	System.exit(0);
+        		}
         	}
         }
         System.out.println("Program terminated!");

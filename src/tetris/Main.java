@@ -12,17 +12,18 @@ public class Main {
 	 * 예) currentDebugLevel의 값이 3이면, 모든 정보를 출력한다. 
 	 * 예) currentDebugLevel의 값이 2이면, debugLevel 1 ~ 2까지의 정보를 출력한다. (특정 이벤트 및 흐름)
 	 * 예) currentDebugLevel의 값이 1이면, debugLevel 1만 출력 ( 프로그램의 흐름에 대한 정보만 ) 
+	 * 예) currentDebugLevel의 값이 0이면, 아무것도 출력하지 않음.
 	 */
-	private final static int currentDebugLevel = 0;	// 현재 디버그 레벨.
-	private final static int debugLevel1 = 1;	// 프로그램의 흐름에 대한 정보. 
-	private final static int debugLevel2 = 2;	// 프로그램에서 어떠한 이벤트에 대한 정보.
-	private final static int debugLevel3 = 3;	// 특정 이벤트가 발생한 상황에서 변수의 변화 등에 대한 정보.
+	private final static int currentDebugLevel = 0;	// 현재 디버그 레벨
+	private final static int debugLevel1 = 1;	// 프로그램의 흐름에 대한 정보 
+	private final static int debugLevel2 = 2;	// 프로그램에서 어떠한 이벤트에 대한 정보
+	private final static int debugLevel3 = 3;	// 특정 이벤트가 발생한 상황에서 변수의 변화 등에 대한 정보
 	
 	private final static int numberOfBlockType = 7;	// 블록의 종류
 	
 	// 스크린 관련 
-	private static int iScreenDy = 15;
-    private static int iScreenDx = 10;
+	private static int iScreenDy = 15;	// 스크린의 y축
+    private static int iScreenDx = 10;	// 스크린의 x축
     private static int iScreenDw = 4;	// 벽 두께
 	
 	private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -187,6 +188,12 @@ public class Main {
     };
     private static Matrix[][] setOfBlockObjects;
     
+    /*
+     * 입력 : 4차원 int형 배열 setOfBlkArrays, 블록 종류별로 각도 변화에 따른 모양이 입력되어있음.
+     * 기능 : 각각의 2차원 int형 배열 -> Matrix로 변환함.
+     * 		 이것을 Matrix[블록타입][각도] 형태로 2차원 Matrix형 배열에 저장.
+     * 출력 : 2차원 Matrix 배열 
+     */
     public static void init(int[][][][] setOfBlkArrays) throws MatrixException{
     	int nTypes = setOfBlkArrays.length;
     	int nDegrees = setOfBlkArrays[0].length;
@@ -427,7 +434,7 @@ public class Main {
         	{ new Matrix(blockType6_degree0), new Matrix(blockType6_degree1), new Matrix(blockType6_degree2), new Matrix(blockType6_degree3) }
         };
         */
-        init(setOfBlockArrays);
+        init(setOfBlockArrays);	// 4차원 int형으로 선언된 배열 -> 2차원 Matrix 변환
     	
         boolean newBlockNeeded = false;
         int top = 0;
@@ -441,7 +448,7 @@ public class Main {
         int idxBlockDegree = 0;	// 각도는 처음에 0으로 블록을 생성함.
         if(currentDebugLevel >= debugLevel3) System.out.println("다음 블록 번호 : " + idxBlockType);
         //다음 블록을 생성한다. 
-        Matrix currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree];	// 처음은 degree0 으로 생성한다. 
+        Matrix currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree]; 
         Matrix tempBlk = iScreen.clip(top, left, top+currBlk.get_dy(), left+currBlk.get_dx());
         tempBlk = tempBlk.add(currBlk);
         Matrix oScreen = new Matrix(iScreen);
@@ -459,13 +466,13 @@ public class Main {
                     left++;
                     break;
                 case 's':
-                	if(currentDebugLevel >= debugLevel2) System.out.println("블록 아래로 이동. top 변화 전 : " + top);
+                	if(currentDebugLevel >= debugLevel3) System.out.println("블록 아래로 이동. top 변화 전 : " + top);
                     top++;
-                    if(currentDebugLevel >= debugLevel2) System.out.println("블록 아래로 이동. top 변화 후: " + top);
+                    if(currentDebugLevel >= debugLevel3) System.out.println("블록 아래로 이동. top 변화 후: " + top);
                     break;
                 case 'w':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록을 회전시킵니다.");
-                	idxBlockDegree = (idxBlockDegree + 1) % 4;
+                	idxBlockDegree = (idxBlockDegree + 1) % 4; // degree 값은 0 ~ 3 을 반복하도록 만듬.
                 	currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree];
                     break;
                 case ' ':
@@ -539,7 +546,7 @@ public class Main {
                 
                 // 맨 윗줄 처리와 관련된 부분이다.
                 if(currentDebugLevel >= debugLevel3) System.out.println("맨 윗줄 처리.");
-                // ?? 한칸 내려오면 맨 윗칸은 모두 0으로 바꿔야함.
+                //한칸 내려오면 맨 윗칸은 모두 0으로 바꿔야함.
                 int[][] emptyLine = createArrayScreen(1,iScreenDx, 0);	// 빈 라인을 생성. 인자 -> dy, dx, dw  
                 Matrix emptyLineMatrix = new Matrix(emptyLine);
                 if(currentDebugLevel >= debugLevel3) emptyLineMatrix.print();
@@ -553,9 +560,10 @@ public class Main {
         	}
             
             
-            if (newBlockNeeded) {
+            if (newBlockNeeded) {	// 새 블록이 필요한 경우
                 iScreen = new Matrix(oScreen);
-                top = 0;
+                // top과 left 초기화
+                top = 0;	
                 left = iScreenDw + iScreenDx / 2 - 2;
                 newBlockNeeded = false;
                
@@ -567,7 +575,7 @@ public class Main {
                 currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree]; // 처음은 degree0으로 생성한다.
                 tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx());
                 tempBlk = tempBlk.add(currBlk);
-                if (tempBlk.anyGreaterThan(1)){
+                if (tempBlk.anyGreaterThan(1)){	// 새 블록이 나오자마자 충돌 -> 게임오버
                 	System.out.println("Game Over!");
                 	System.exit(0);
                 }
