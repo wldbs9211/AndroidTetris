@@ -247,19 +247,26 @@ public class TestMain {
         Random random = new Random();
         idxType = random.nextInt(7);
         key = (char) ('0' + random.nextInt(7));
-        board.accept(key);
+        state = board.accept(key);
         //board2.accept('0', idxType);	//board , board2에 동일한 key 전달
         board.printScreen(); System.out.println();
         //board2.printScreen(); System.out.println();
         
-        while((key = getKey()) != 'q'){
-        	state = board.accept(key);        	
+        while(((key = getKey()) != 'q') && (state != TetrisState.End)){
+        	state = board.accept(key); 
         	board.printScreen(); System.out.println();
-        	if (state == TetrisState.NewBlock){
-        		key = (char) ('0' + random.nextInt(7));
-        		state = board.accept(key);
-        		board.printScreen(); System.out.println();
-        		if(state == TetrisState.End) break;	// GameOver
+        	switch(state){
+	        	case NewBlock:
+	        		key = (char) ('0' + random.nextInt(7));
+	        		state = board.accept(key);
+	        		board.printScreen(); System.out.println();
+	        		break;
+	        	case Error:
+	        		System.out.println("잘못된 key의 입력");
+	        		break;
+	        	case End:
+	        		System.out.println("Game Over!");
+	        		break;
         	}
         }
         
@@ -287,7 +294,7 @@ public class TestMain {
         	}
         }
         */
-        System.out.println("Game Over!");
+        System.out.println("Program Terminated!");
     }
 }
 

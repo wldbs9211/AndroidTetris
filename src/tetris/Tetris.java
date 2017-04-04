@@ -20,13 +20,13 @@ public class Tetris {
 	 * 예) currentDebugLevel의 값이 1이면, debugLevel 1만 출력 ( 프로그램의 흐름에 대한 정보만 )
 	 * 예) currentDebugLevel의 값이 0이면, 아무것도 출력하지 않음. 
 	 */
-	private final static int currentDebugLevel = 3;	// 현재 디버그 레벨.
+	private final static int currentDebugLevel = 0;	// 현재 디버그 레벨.
 	private final static int debugLevel1 = 1;	// 프로그램의 흐름에 대한 정보. 
 	private final static int debugLevel2 = 2;	// 프로그램에서 어떠한 이벤트에 대한 정보.
 	private final static int debugLevel3 = 3;	// 특정 이벤트가 발생한 상황에서 변수의 변화 등에 대한 정보.
 	
 	private static int numberOfBlockTypes;	
-	private static int numberOfDegrees;	
+	private static int numberOfDegrees;
 	
 	private static int iScreenDy;
     private static int iScreenDx;
@@ -36,6 +36,8 @@ public class Tetris {
     private static String line = null;
     private static int nKeys = 0;
     
+    // Matrix iScreen = new Matrix(createArrayScreen(iScreenDy,iScreenDx, iScreenDw));
+    // 이 방법은 좋지 않다. 이 함수가 불리는 시점에 createArrayScreen의 인자의 상태는 어떨까.. 생각.. 생성자가 더 좋음.
     private Matrix iScreen = null;
     private Matrix oScreen = null;
     private Matrix currBlk = null;
@@ -46,169 +48,7 @@ public class Tetris {
     private int left;
     
     private TetrisState tetrisState;
-	
-   /*
-    * Matrix iScreen = new Matrix(createArrayScreen(iScreenDy,iScreenDx, iScreenDw));
-    * 이 방법은 좋지 않다. 이 함수가 불리는 시점에 createArrayScreen의 인자의 상태는 어떨까.. 생각..
-    * 생성자가 더 좋음.
-    */
     
-    private static int[][][][] setOfBlockArrays = { // [7][4][?][?]  -> [종류][회전][가로][세로] 
-    		{
-    			{
-    				{0,0,0,0},
-    				{0,0,0,0},
-    				{1,1,1,1},
-    				{0,0,0,0},
-    			},
-    			{
-    				{0,1,0,0},
-    				{0,1,0,0},
-    				{0,1,0,0},
-    				{0,1,0,0},
-    			},
-    			{
-    				{0,0,0,0},
-    				{0,0,0,0},
-    				{1,1,1,1},
-    				{0,0,0,0},
-    			},
-    			{
-    				{0,1,0,0},
-    				{0,1,0,0},
-    				{0,1,0,0},
-    				{0,1,0,0},
-    			}
-    		},
-    		{
-    			{
-    				{0,0,0},
-        			{0,1,0},
-        			{1,1,1},
-    			},
-    			{
-    				{0,1,0},
-        			{0,1,1},
-        			{0,1,0},
-    			},
-    			{
-    				{0,0,0},
-        			{1,1,1},
-        			{0,1,0},
-    			},
-    			{
-    				{0,1,0},
-        			{1,1,0},
-        			{0,1,0},
-    			}
-    		},
-    		{
-    			{
-    				{1,0,0},
-        			{1,1,1},
-        			{0,0,0},
-    			},
-    			{
-    				{0,1,1},
-        			{0,1,0},
-        			{0,1,0},
-    			},
-    			{
-    				{0,0,0},
-        			{1,1,1},
-        			{0,0,1},
-    			},
-    			{
-    				{0,1,0},
-        			{0,1,0},
-        			{1,1,0},
-    			}
-    		},
-    		{
-    			{
-    				{0,0,1},
-    				{1,1,1},
-    				{0,0,0},
-    			},
-    			{
-    				{0,1,0},
-    				{0,1,0},
-    				{0,1,1},
-    			},
-    			{
-    				{0,0,0},
-    				{1,1,1},
-    				{1,0,0},
-    			},
-    			{
-    				{1,1,0},
-    				{0,1,0},
-    				{0,1,0},
-    			}
-    		},
-    		{
-    			{
-    				{1,1},
-    	    		{1,1},
-    			},
-    			{
-    				{1,1},
-    	    		{1,1},
-    			},
-    			{
-    				{1,1},
-    	    		{1,1},
-    			},
-    			{
-    				{1,1},
-    	    		{1,1},
-    			}
-    		},
-    		{
-    			{
-    				{0,1,1},
-    	    		{1,1,0},
-    	    		{0,0,0},
-    			},
-    			{
-    				{0,1,0},
-    	    		{0,1,1},
-    	    		{0,0,1},
-    			},
-    			{
-    				{0,0,0},
-    	    		{0,1,1},
-    	    		{1,1,0},
-    			},
-    			{
-    				{1,0,0},
-    	    		{1,1,0},
-    	    		{0,1,0},
-    			}
-    		},
-    		{
-    			{
-    				{0,0,0},
-    	    		{1,1,0},
-    	    		{0,1,1},
-    			},
-    			{
-    	    		{0,0,1},
-    	    		{0,1,1},
-    	    		{0,1,0},
-    			},
-    			{
-    				{0,0,0},
-    	    		{1,1,0},
-    	    		{0,1,1},
-    			},
-    			{
-    				{0,1,0},
-    	    		{1,1,0},
-    	    		{1,0,0},
-    			}
-    		}
-    };
     private static Matrix[][] setOfBlockObjects;
 
 	private static char getKey() throws IOException {
@@ -302,14 +142,14 @@ public class Tetris {
      * - 게임의 상태에 대해서 top, left, blkType, blkDegree, screen 등으로 위치, 회전, 모양, 상태 등을 저장해야함.
      * 
      * 리턴
-     * - 결과로 새로운 블록이 필요한지 리턴함. 
+     * - 현재 프로그램의 상태 리턴 
      */
     public TetrisState accept(char key) throws Exception {
         boolean newBlockNeeded = false;
         int idxType;
         
-        System.out.println("State : " + tetrisState);
-        System.out.println("key : " + key);
+        if(currentDebugLevel >= debugLevel3) System.out.println("Key 들어오기 전 State : " + tetrisState);
+        if(currentDebugLevel >= debugLevel3) System.out.println("들어온 key : " + key);
         
         // Start 혹은 NewBlock 상태에서만 현재 블록을 변경시킴, 나머지는 조작 상태이기 때문에 idxType을 바꿀 필요가 없음.
         if(tetrisState == TetrisState.Start || tetrisState == TetrisState.NewBlock){
@@ -318,8 +158,10 @@ public class Tetris {
         	
         	blkType = idxType; // 외부에서 받아온 블록 모양 	
             currBlk = setOfBlockObjects[blkType][blkDegree];
-            tetrisState = TetrisState.Running;	// 상태는 Running으로 변경.
         }
+        
+        // 상태는 일단 Running으로 변경, 예외(Error, Stop 상황)가 발생하면 그 시점에서 동작을 중단하고 상태를 변경 후 바로 리턴함. 
+        tetrisState = TetrisState.Running;	
 
         // 게임의 상태니 위로 올림.
         //int top = 0;
@@ -340,7 +182,9 @@ public class Tetris {
 
         // 이 부분을 추가하는 이유는 블록이 생성되자마자 다른 블록과 충돌(게임오버 조건) 검사하기 위함임. 여기서 검사하지 않으면 화면에 x자가 출력된다. 아래 부분을 실행 말고 종료.
         if(tempBlk.anyGreaterThan(1)){
+        	if(currentDebugLevel >= debugLevel3) System.out.println("종료조건 충족");
         	tetrisState = TetrisState.End;
+        	if(currentDebugLevel >= debugLevel3) System.out.println("accept 처리 후 State : " + tetrisState);
         	return tetrisState;
         }
         
@@ -382,12 +226,16 @@ public class Tetris {
                     }
                     // 여기까지 왔다면 블록은 현재 충돌된 상태임. 아래 최종 작업에서 top을 하나 빼주어야함.
                     break;
-                default:
-                	// ?? 여기가 자꾸 실행되네.. 조건 아닌뎅..
-                	System.out.println("뭐야 이건..");
-                	if(currentDebugLevel >= debugLevel2) System.out.println("잘못된 키의 입력!");
-                	tetrisState = TetrisState.Error;
-                	return tetrisState;	// 에러인 경우에는 아래를 실행하지 않고 끝내자.
+                default :
+                	// 잘못된 key의 경우 이쪽이 실행된다.
+                	if( (0 <= key - '0') && ( key - '0' < numberOfBlockTypes)){ // 숫자의 경우는 새로운 블록을 요청이니 제외함.
+                		if(currentDebugLevel >= debugLevel2) System.out.println("BlockType이 입력으로 들어옴");
+                	}else{	// 숫자가 아닌 경우는 State를 Error로 변경함.
+	                	if(currentDebugLevel >= debugLevel2) System.out.println("잘못된 key의 입력, key : " + key);
+	                	tetrisState = TetrisState.Error;
+	                	if(currentDebugLevel >= debugLevel3) System.out.println("accept 처리 후 State : " + tetrisState);
+	                	return tetrisState;	// 에러인 경우에는 아래를 실행하지 않고 끝내자.
+                	}
             }
             tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx());
             tempBlk = tempBlk.add(currBlk);
@@ -469,6 +317,7 @@ public class Tetris {
                 tetrisState = TetrisState.NewBlock;	
         	}
         	
+        	if(currentDebugLevel >= debugLevel3) System.out.println("accept 처리 후 State : " + tetrisState);
             return tetrisState;
     }
 }
