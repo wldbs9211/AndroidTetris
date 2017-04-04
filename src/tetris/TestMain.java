@@ -19,12 +19,10 @@ public class TestMain {
 	private final static int debugLevel2 = 2;	// 프로그램에서 어떠한 이벤트에 대한 정보.
 	private final static int debugLevel3 = 3;	// 특정 이벤트가 발생한 상황에서 변수의 변화 등에 대한 정보.
 	
-	private final static int numberOfBlockType = 7;	// 블록의 종류
-	
 	private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     private static String line = null;
     private static int nKeys = 0;
-	
+
     private static int[][][][] setOfBlockArrays = { // [7][4][?][?]  -> [종류][회전][가로][세로] 
     		{
     			{
@@ -181,7 +179,6 @@ public class TestMain {
     			}
     		}
     };
-    private static Matrix[][] setOfBlockObjects;
     
 	private static char getKey() throws IOException {
         char ch;
@@ -199,46 +196,10 @@ public class TestMain {
         return ch;
     }
 	
-    private static int iScreenDy = 15;
-    private static int iScreenDx = 10;
-    private static int iScreenDw = 4;
-    
-    private static int[][] createArrayScreen(int dy, int dx, int dw) {
-        int y, x;
-        int[][] array = new int[dy + dw][dx + 2 * dw];
-        for (y = 0; y < array.length; y++)
-            for (x = 0; x < dw; x++)
-                array[y][x] = 1;
-        for (y = 0; y < array.length; y++)
-            for (x = dw + dx; x < array[0].length; x++)
-                array[y][x] = 1;
-        for (y = dy; y < array.length; y++)
-            for (x = 0; x < array[0].length; x++)
-                array[y][x] = 1;
-        return array;
-    }
-    
-    public static void printScreen(Matrix screen) {
-        int dy = screen.get_dy();
-        int dx = screen.get_dx();
-        int dw = iScreenDw;
-        int array[][] = screen.get_array();
-        for (int y = 0; y < dy - dw + 1; y++) {
-            for (int x = dw -1; x < dx - dw + 1; x++) {
-                if (array[y][x] == 0) System.out.print("□ ");
-                else if (array[y][x] == 1) System.out.print("■ ");
-                else System.out.print("x ");
-            }
-            System.out.println();
-        }
-    }
-
     public static void main(String[] args) throws Exception {
         char key;
         int idxType;
-        boolean newBlockNeeded;
         TetrisState state;
-        
         Tetris.init(setOfBlockArrays);	// static method임. 객체를 생성한 적이 없지만 바로 접근이 가능. 공유, 정적
         
         Tetris board = new Tetris(15, 10);	// 이것은 공유하지 않음. 동적
@@ -252,7 +213,7 @@ public class TestMain {
         board.printScreen(); System.out.println();
         //board2.printScreen(); System.out.println();
         
-        while(((key = getKey()) != 'q') && (state != TetrisState.End)){
+        while(((key = getKey()) != 'q') && (state != TetrisState.End)){	// q키가 아니고, 게임 종료 조건이 아니면 계속 진행.
         	state = board.accept(key); 
         	board.printScreen(); System.out.println();
         	switch(state){
