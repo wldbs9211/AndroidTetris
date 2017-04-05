@@ -253,30 +253,33 @@ public class Tetris {
             switch (key) {
                 case 'a':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 왼쪽 이동.");
-                    left--;
+                    //left--;
+                	onLeft.run(key);
                     break;
                 case 'd':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 오른쪽 이동.");
-                    left++;
+                    //left++;
+                	onRight.run(key);
                     break;
                 case 's':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 아래로 이동. top 변화 전 : " + top);
-                    top++;
+                    //top++;
+                    onDown.run(key);
                     if(currentDebugLevel >= debugLevel2) System.out.println("블록 아래로 이동. top 변화 후: " + top);
                     break;
                 case 'w':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록을 회전시킵니다.");
-                	blkDegree = (blkDegree + 1) % 4;
                 	if(currentDebugLevel >= debugLevel3) System.out.println("blkDegree : " + blkDegree);
-                	currBlk = setOfBlockObjects[blkType][blkDegree];
+                	//blkDegree = (blkDegree + 1) % 4;
+                	//currBlk = setOfBlockObjects[blkType][blkDegree];
+                	onCW.run(key);
                     break;
                 case ' ':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록을 끝까지 내립니다.");
                 	// 바닥에 닿기 전까지 한칸씩 내려가며 충돌하나 비교한다.
-                	tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx()); // 블록이 생성될 위치 초기 세팅.
-                    tempBlk = tempBlk.add(currBlk); // 현재 블록 넣고.
                     while (!tempBlk.anyGreaterThan(1)){ // 충돌까지 내린다.
-                    	top ++;	// 내리고.
+                    	//top ++;	// 내리고.
+                    	onDown.run(key);
                     	tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx()); // 갱신하고.
                         tempBlk = tempBlk.add(currBlk); // 현재 블록 넣고.
                     	if(currentDebugLevel >= debugLevel3) System.out.println("블록을 하나 내려봅니다. top : " + top );
@@ -299,24 +302,31 @@ public class Tetris {
             if (tempBlk.anyGreaterThan(1)) {
                 switch (key) {
                     case 'a':
-                        left++;
+                        //left++;
+                    	onRight.run(key);
                         break;
                     case 'd':
-                        left--;
+                        //left--;
+                    	onLeft.run(key);
                         break;
                     case 's':
-                        top--;
+                        //top--;
+                    	onUp.run(key);
                         newBlockNeeded = true;
                         break;
                     case 'w':
                     	if(currentDebugLevel >= debugLevel2) System.out.println("블록이 회전 과정에서 충돌하였음. 이전으로 돌아감");
+                    	/*
                     	blkDegree = blkDegree - 1;	// Degree를 이전으로 돌림.
                     	if(blkDegree == -1) blkDegree = 3; // 회전 : 3 -> 0 , 충돌 : 0 -> -1 케이스니 3으로 되돌림.
                     	currBlk = setOfBlockObjects[blkType][blkDegree];
+                    	*/
+                    	onCCW.run(key);
                         break;
                     case ' ':
                     	// 이미 충돌된 상태임. top을 하나 빼주어 충돌 직전 위치로 이동. 
-                    	top--;
+                    	//top--;
+                    	onUp.run(key);
                     	if(currentDebugLevel >= debugLevel3) System.out.println("블록이 바닥에 충돌하였음. 최종 top의 값 : " + top);
                     	newBlockNeeded = true;
                         break;
