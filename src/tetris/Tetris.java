@@ -127,6 +127,63 @@ public class Tetris {
         tetrisState = TetrisState.Start;
     }
     
+    // lab 5.1
+    interface ActionHandler {
+    	public void run(char key) throws Exception;
+    }
+    class OnLeft implements ActionHandler {
+    	public void run(char key) { left = left - 1; }
+    }
+    class OnRight implements ActionHandler {
+    	public void run(char key) { left = left + 1; }
+    }
+    class OnDown implements ActionHandler {
+    	public void run(char key) { top = top + 1; }
+    }
+    class OnUp implements ActionHandler {
+    	public void run(char key) { top = top - 1; }
+    }
+    class OnCW implements ActionHandler {
+    	public void run(char key) {
+    		blkDegree = (blkDegree + 1) % numberOfDegrees;
+    		currBlk = setOfBlockObjects[blkType][blkDegree];
+    	}
+    }
+    class OnCCW implements ActionHandler {
+    	public void run (char key) {
+    		blkDegree = (blkDegree+3)%numberOfDegrees;
+    		currBlk = setOfBlockObjects[blkType][blkDegree];
+    	}
+    }
+    class OnNewBlock implements ActionHandler {
+    	public void run(char key) throws Exception {
+    		// ??
+    		//if(isJustStarted == false)
+    		//	oScreen = deleteFullLines(oScreen, currBlk, top, iScreenDy);
+    		//isJustStarted = false;
+    		iScreen = new Matrix(oScreen);
+    		top = 0;
+    		left = iScreenDw + iScreenDx/2 - 2;
+    		blkType = key - '0';
+    		blkDegree = 0;
+    		currBlk = setOfBlockObjects[blkType][blkDegree];
+    	}
+    }
+    class OnFinished implements ActionHandler{
+    	public void run(char key) {
+    		System.out.println("OnFinished.run(); called");
+    	}
+    }
+    private OnLeft onLeft = new OnLeft();
+    private OnRight onRight = new OnRight();
+    private OnDown onDown = new OnDown();
+    private OnUp onUp = new OnUp();
+    private OnCW onCW = new OnCW();
+    private OnCCW onCCW = new OnCCW();
+    private OnNewBlock onNewBlock = new OnNewBlock();
+    private OnFinished onFinished = new OnFinished();
+    
+    
     /*
      * 입력
      * 1. 입력한 키 값 -> key
