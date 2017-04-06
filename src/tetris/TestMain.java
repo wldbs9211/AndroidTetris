@@ -202,7 +202,7 @@ public class TestMain {
         TetrisState state;
         Tetris.init(setOfBlockArrays);	// static method임. 객체를 생성한 적이 없지만 바로 접근이 가능. 공유, 정적
         
-        Tetris board = new Tetris(15, 10);	// 이것은 공유하지 않음. 동적
+        Tetris board = new Tetris(15, 10, setOfBlockArrays);	// 이것은 공유하지 않음. 동적
         //Tetris board2 = new Tetris(15, 12);	// 복수 객체 검증을 위함.
         
         Random random = new Random();

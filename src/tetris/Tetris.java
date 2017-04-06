@@ -16,31 +16,28 @@ public class Tetris {
 	 * 예) currentDebugLevel의 값이 1이면, debugLevel 1만 출력 ( 프로그램의 흐름에 대한 정보만 )
 	 * 예) currentDebugLevel의 값이 0이면, 아무것도 출력하지 않음. 
 	 */
-	private final static int currentDebugLevel = 0;	// 현재 디버그 레벨.
+	private final static int currentDebugLevel = 3;	// 현재 디버그 레벨.
 	private final static int debugLevel1 = 1;	// 프로그램의 흐름에 대한 정보. 
 	private final static int debugLevel2 = 2;	// 프로그램에서 어떠한 이벤트에 대한 정보.
 	private final static int debugLevel3 = 3;	// 특정 이벤트가 발생한 상황에서 변수의 변화 등에 대한 정보.
 	
-	private static int numberOfBlockTypes;	
+	private static int iScreenDw;
+    private static int numberOfBlockTypes;	
 	private static int numberOfDegrees;
+	private static Matrix[][] setOfBlockObjects;
 	
-	private static int iScreenDy;
-    private static int iScreenDx;
-    private static int iScreenDw = 4;
-	
+	private int iScreenDy;
+    private int iScreenDx;
+    private int blkType = 0;
+    private int blkDegree = 0;
+    private int top;
+    private int left;    
+    private TetrisState tetrisState;
     // Matrix iScreen = new Matrix(createArrayScreen(iScreenDy,iScreenDx, iScreenDw));
     // 이 방법은 좋지 않다. 이 함수가 불리는 시점에 createArrayScreen의 인자의 상태는 어떨까.. 생각.. 생성자가 더 좋음.
     private Matrix iScreen = null;
     private Matrix oScreen = null;
     private Matrix currBlk = null;
-    
-    private int blkType = 0;
-    private int blkDegree = 0;
-    private int top;
-    private int left;
-    
-    private TetrisState tetrisState;    
-    private static Matrix[][] setOfBlockObjects;
 
     private static int[][] createArrayScreen(int dy, int dx, int dw) {
         int y, x;
@@ -92,7 +89,14 @@ public class Tetris {
     	}
     }
     
-    public Tetris(int cy, int cx) throws MatrixException{	
+    // public Tetris(int cy, int cx) throws MatrixException, TetrisException{	// 아래에서 Exception 하나로 통합.
+    public Tetris(int cy, int cx, int[][][][] setOfBlkArrays) throws Exception{
+    	// ??
+    	iScreenDw = findLargestBlockSize(setOfBlkArrays);
+    	
+    	if(cy < iScreenDw || cx < iScreenDw)
+    		throw new TetrisException("too small screen");
+    	
     	iScreenDy = cy;
     	iScreenDx = cx;
     	iScreen = new Matrix(createArrayScreen(iScreenDy,iScreenDx, iScreenDw));
@@ -101,6 +105,81 @@ public class Tetris {
         left = iScreenDw + iScreenDx/2 - 2;
         tetrisState = TetrisState.Start;
     }
+    
+    // ?? 정방행렬인지도 체크해라. -> 아니면 exception 날려라.
+    private void checkSquareMartix(int[][][][] setOfBlkArrays){
+    	for(int blkType = 0; blkType < setOfBlkArrays.length; blkType++){
+    		
+    	}
+    }
+    
+    // iScreenDw 결정
+    private int findLargestBlockSize(int[][][][] setOfBlkArrays){
+    	int maxSize = 0;
+    	for(int i = 0; i < setOfBlkArrays.length; i++){	// 종류
+    		if(currentDebugLevel >= debugLevel3) System.out.println("블록 길이 : " + setOfBlkArrays[i][0].length);
+    		if(maxSize < setOfBlkArrays[i][0].length) maxSize = setOfBlkArrays[i][0].length; // maxSize 갱신
+    	}
+    	if(currentDebugLevel >= debugLevel3) System.out.println("maxBlockSize : " + maxSize);
+    	return maxSize;
+    }
+    
+    // lab 5.1
+    interface ActionHandler {
+    	public void run(char key) throws Exception;
+    }
+    class OnLeft implements ActionHandler {
+    	public void run(char key) { left = left - 1; }
+    }
+    class OnRight implements ActionHandler {
+    	public void run(char key) { left = left + 1; }
+    }
+    class OnDown implements ActionHandler {
+    	public void run(char key) { top = top + 1; }
+    }
+    class OnUp implements ActionHandler {
+    	public void run(char key) { top = top - 1; }
+    }
+    class OnCW implements ActionHandler {
+    	public void run(char key) {
+    		blkDegree = (blkDegree + 1) % numberOfDegrees;
+    		currBlk = setOfBlockObjects[blkType][blkDegree];
+    	}
+    }
+    class OnCCW implements ActionHandler {
+    	public void run (char key) {
+    		blkDegree = (blkDegree+3)%numberOfDegrees;
+    		currBlk = setOfBlockObjects[blkType][blkDegree];
+    	}
+    }
+    class OnNewBlock implements ActionHandler {
+    	public void run(char key) throws Exception {
+    		// ??
+    		//if(isJustStarted == false)
+    		//	oScreen = deleteFullLines(oScreen, currBlk, top, iScreenDy);
+    		//isJustStarted = false;
+    		iScreen = new Matrix(oScreen);
+    		top = 0;
+    		left = iScreenDw + iScreenDx/2 - 2;
+    		blkType = key - '0';
+    		blkDegree = 0;
+    		currBlk = setOfBlockObjects[blkType][blkDegree];
+    	}
+    }
+    class OnFinished implements ActionHandler{
+    	public void run(char key) {
+    		System.out.println("OnFinished.run(); called");
+    	}
+    }
+    private OnLeft onLeft = new OnLeft();
+    private OnRight onRight = new OnRight();
+    private OnDown onDown = new OnDown();
+    private OnUp onUp = new OnUp();
+    private OnCW onCW = new OnCW();
+    private OnCCW onCCW = new OnCCW();
+    private OnNewBlock onNewBlock = new OnNewBlock();
+    private OnFinished onFinished = new OnFinished();
+    
     
     /*
      * 입력
@@ -121,6 +200,16 @@ public class Tetris {
      */
     public TetrisState accept(char key) throws Exception {
         int idxType;
+        
+        /* ?? 
+        if(newBlockNeeded){	// 새로운 블록이 필요한 경우라면..					//if(key == '0')					   
+    		iScreen = new Matrix(oScreen);	// 마지막 상태 iScreen에 저장.	// 이것은 일단 필요한 동작은 아니야.. 하지만 그냥 넣어둬보자.
+    		top = 0;	
+            left = iScreenDw + iScreenDx/2 - 2;
+            blkDegree = 0;	// 각도 0으로.
+            tetrisState = TetrisState.NewBlock;	
+    	}
+    	*/
         
         if(currentDebugLevel >= debugLevel3) System.out.println("Key 들어오기 전 State : " + tetrisState);
         if(currentDebugLevel >= debugLevel3) System.out.println("들어온 key : " + key);
@@ -150,7 +239,7 @@ public class Tetris {
         
         if(currentDebugLevel >= debugLevel3) System.out.println("다음 블록 번호 : " + blkType);
         //다음 블록을 생성한다. 
-        Matrix currBlk = setOfBlockObjects[blkType][blkDegree];	
+        currBlk = setOfBlockObjects[blkType][blkDegree];	
         Matrix tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx());
         tempBlk = tempBlk.add(currBlk);
 
@@ -170,30 +259,33 @@ public class Tetris {
             switch (key) {
                 case 'a':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 왼쪽 이동.");
-                    left--;
+                    //left--;
+                	onLeft.run(key);
                     break;
                 case 'd':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 오른쪽 이동.");
-                    left++;
+                    //left++;
+                	onRight.run(key);
                     break;
                 case 's':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 아래로 이동. top 변화 전 : " + top);
-                    top++;
+                    //top++;
+                    onDown.run(key);
                     if(currentDebugLevel >= debugLevel2) System.out.println("블록 아래로 이동. top 변화 후: " + top);
                     break;
                 case 'w':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록을 회전시킵니다.");
                 	blkDegree = (blkDegree + 1) % 4;
-                	if(currentDebugLevel >= debugLevel3) System.out.println("blkDegree : " + blkDegree);
                 	currBlk = setOfBlockObjects[blkType][blkDegree];
+                	//onCW.run(key);
+                	if(currentDebugLevel >= debugLevel3) System.out.println("blkDegree : " + blkDegree);
                     break;
                 case ' ':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록을 끝까지 내립니다.");
                 	// 바닥에 닿기 전까지 한칸씩 내려가며 충돌하나 비교한다.
-                	tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx()); // 블록이 생성될 위치 초기 세팅.
-                    tempBlk = tempBlk.add(currBlk); // 현재 블록 넣고.
                     while (!tempBlk.anyGreaterThan(1)){ // 충돌까지 내린다.
-                    	top ++;	// 내리고.
+                    	//top ++;	// 내리고.
+                    	onDown.run(key);
                     	tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx()); // 갱신하고.
                         tempBlk = tempBlk.add(currBlk); // 현재 블록 넣고.
                     	if(currentDebugLevel >= debugLevel3) System.out.println("블록을 하나 내려봅니다. top : " + top );
@@ -216,24 +308,31 @@ public class Tetris {
             if (tempBlk.anyGreaterThan(1)) {
                 switch (key) {
                     case 'a':
-                        left++;
+                        //left++;
+                    	onRight.run(key);
                         break;
                     case 'd':
-                        left--;
+                        //left--;
+                    	onLeft.run(key);
                         break;
                     case 's':
-                        top--;
-                        tetrisState = TetrisState.NewBlock;
+                        //top--;
+                    	onUp.run(key);
+                    	tetrisState = TetrisState.NewBlock;
                         break;
                     case 'w':
                     	if(currentDebugLevel >= debugLevel2) System.out.println("블록이 회전 과정에서 충돌하였음. 이전으로 돌아감");
+                    	/*
                     	blkDegree = blkDegree - 1;	// Degree를 이전으로 돌림.
                     	if(blkDegree == -1) blkDegree = 3; // 회전 : 3 -> 0 , 충돌 : 0 -> -1 케이스니 3으로 되돌림.
                     	currBlk = setOfBlockObjects[blkType][blkDegree];
+                    	*/
+                    	onCCW.run(key);
                         break;
                     case ' ':
                     	// 이미 충돌된 상태임. top을 하나 빼주어 충돌 직전 위치로 이동. 
-                    	top--;
+                    	//top--;
+                    	onUp.run(key);
                     	if(currentDebugLevel >= debugLevel3) System.out.println("블록이 바닥에 충돌하였음. 최종 top의 값 : " + top);
                     	tetrisState = TetrisState.NewBlock;
                         break;
@@ -257,4 +356,9 @@ public class Tetris {
         	if(currentDebugLevel >= debugLevel3) System.out.println("accept 처리 후 State : " + tetrisState);
             return tetrisState;
     }
+}
+
+class TetrisException extends Exception {
+	public TetrisException() { super("Tetris Exception"); }
+	public TetrisException(String msg) { super(msg); }
 }
