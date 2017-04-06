@@ -213,48 +213,27 @@ public class TestMain {
         board.printScreen(); System.out.println();
         //board2.printScreen(); System.out.println();
         
-        while(((key = getKey()) != 'q') && (state != TetrisState.End)){	// q키가 아니고, 게임 종료 조건이 아니면 계속 진행.
-        	state = board.accept(key); 
-        	board.printScreen(); System.out.println();
-        	switch(state){
-	        	case NewBlock:
-	        		key = (char) ('0' + random.nextInt(7));
-	        		state = board.accept(key);
-	        		board.printScreen(); System.out.println();
-	        		break;
-	        	case Error:
-	        		System.out.println("잘못된 key의 입력");
-	        		break;
-	        	case End:
-	        		System.out.println("Game Over!");
-	        		break;
-        	}
-        }
-        
-        /*
         while((key = getKey()) != 'q'){
-        	newBlockNeeded = board.accept(key);
+        	state = board.accept(key);
         	//board2.accept(key, idxType);	//board , board2에 동일한 key 전달
         	
         	board.printScreen(); System.out.println();
         	//board2.printScreen(); System.out.println();
         	
         	// 새로운 블록이 필요하지 않다면 idxType을 계속 저장하여 유지한다. degree는 Tetris 클래스에서 내부적으로 저장.
-        	if (newBlockNeeded) {
-        		idxType = random.nextInt(7);
+        	if (state == TetrisState.NewBlock) {
         		key = (char) ('0' + random.nextInt(7));
-        		newBlockNeeded = board.accept(key);
+        		state = board.accept(key);
         		//board2.accept('0', idxType); //board , board2에 동일한 key 전달
         		
         		board.printScreen(); System.out.println();
         		//board2.printScreen(); System.out.println();
-        		if (newBlockNeeded){ // 새 블록이 필요한 상태에서 또 중복되었다면 게임종료.
+        		if (state == TetrisState.Finished){ // 새 블록이 필요한 상태에서 또 중복되었다면 게임종료.
         			System.out.println("Game Over!");
                 	System.exit(0);
         		}
         	}
         }
-        */
         System.out.println("Program Terminated!");
     }
 }
