@@ -91,7 +91,7 @@ public class Tetris {
     
     // public Tetris(int cy, int cx) throws MatrixException, TetrisException{	// 아래에서 Exception 하나로 통합.
     public Tetris(int cy, int cx, int[][][][] setOfBlkArrays) throws Exception{
-    	// ??
+    	checkSquareMatrix(setOfBlkArrays);
     	iScreenDw = findLargestBlockSize(setOfBlkArrays);
     	
     	if(cy < iScreenDw || cx < iScreenDw)
@@ -106,10 +106,13 @@ public class Tetris {
         tetrisState = TetrisState.Start;
     }
     
-    // ?? 정방행렬인지도 체크해라. -> 아니면 exception 날려라.
-    private void checkSquareMartix(int[][][][] setOfBlkArrays){
+    // 정방행렬인지도 체크 -> 아니면 exception 날림
+    private void checkSquareMatrix(int[][][][] setOfBlkArrays) throws Exception{
     	for(int blkType = 0; blkType < setOfBlkArrays.length; blkType++){
-    		
+    		for(int blkDegree = 0; blkDegree < setOfBlkArrays[0].length; blkDegree++){
+    			if(setOfBlkArrays[blkType][blkDegree].length != setOfBlkArrays[blkType][blkDegree][0].length)
+        			throw new TetrisException("정방행렬이 아닙니다!");
+    		}
     	}
     }
     
