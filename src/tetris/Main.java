@@ -526,6 +526,9 @@ public class Main {
             printScreen(oScreen);
             System.out.println();
           
+            
+            oScreen.fullLineDelete(oScreen, iScreenDw, tempBlk, iScreenDx);
+            /*
             // 여기에 FullLineDetect 
         	int fullLine;
         	fullLine = oScreen.findFullLine(iScreenDw); 
@@ -558,7 +561,7 @@ public class Main {
             	if(currentDebugLevel >= debugLevel3) System.out.println("FullLine검사, 해당되는 라인(-1이라면 없음) : " + fullLine);
             	// findFullLine 함수는 fullLine인 줄의 number를 리턴함. fullLine이 없다면 -1을 리턴함.
         	}
-            
+            */
             
             if (newBlockNeeded) {	// 새 블록이 필요한 경우
                 iScreen = new Matrix(oScreen);

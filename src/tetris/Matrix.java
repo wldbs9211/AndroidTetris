@@ -128,7 +128,6 @@ public class Matrix {
 	 *	출력 : 가장 먼저 FullLine을 만족하는 행의 숫자(int)
 	 *  	  FullLine을 만족하는 행이 없다면 -1을 리턴
 	 */
-	
 	public int findFullLine(int screenDw){
     	for(int i = dy - screenDw - 1; i >= 0; i--){	// 바닥에서 위로 올라오며 검사한다.
     		if(currentDebugLevel >= debugLevel3) System.out.println("풀라인 검사 : " + i + "번 행." );
@@ -145,7 +144,50 @@ public class Matrix {
     	}
     	return -1; // -1을 리턴하는 경우라면 FullLine이 없다는 것임.
     }
-	// end of Matrix
+	
+	public void fullLineDelete(Matrix oScreen, int iScreenDw, Matrix tempBlk, int iScreenDx ){
+		// 여기에 FullLineDetect
+		if(currentDebugLevel >= debugLevel3) System.out.println("fullLineDelete");
+		int fullLine = oScreen.findFullLine(iScreenDw);
+		if(currentDebugLevel >= debugLevel3) System.out.println("FullLine검사, 해당되는 라인(-1이라면 없음) : " + fullLine);
+		// findFullLine 함수는 fullLine인 줄의 number를 리턴함. fullLine이 없다면 -1을 리턴함.
+		
+		while(fullLine > 0){	// fullLine이 검출된 경우, 루프를 돌면서 FullLine이 사라질 때까지 검사.
+			try{
+				// 잘라내는 작업.
+		        //tempBlk = oScreen.clip(0, iScreenDw, fullLine, iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽은 복사 안함.
+				tempBlk = oScreen.clip(0, 0, fullLine, 2*iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽 포함.
+				// 자른 블록 표시.
+		        if(currentDebugLevel >= debugLevel3) tempBlk.print();	
+		        // 붙이는 작업.
+		        //oScreen.paste(tempBlk, 1, iScreenDw);	// 잘랐던 블록들을 붙여넣는다. 한칸 아래로 가니까 인자 2번 1, left는 iScreenDw
+		        oScreen.paste(tempBlk, 1, 0);	// 잘랐던 블록들을 붙여넣는다. 벽 포함.
+		        //printScreen(oScreen); System.out.println();        
+		        
+		        // 맨 윗줄 처리와 관련된 부분이다.
+		        if(currentDebugLevel >= debugLevel3) System.out.println("맨 윗줄 처리.");
+		        //한칸 내려오면 맨 윗칸은 모두 0으로 바꿔야함.
+		        //int[][] emptyLine = createArrayScreen(1,iScreenDx, 0);	// 여기서는 이것을 쓰지 못함.
+		        
+		        // 예) Matrix(1,10) , 0 0 0 0 0 0 0 0 0 0, 빈 라인 만들기 위함.  
+		        int[][] emptyLine = new int[1][iScreenDx];
+		        for(int i = 0; i < iScreenDx; i++) emptyLine[0][i] = 0;
+		        
+		        Matrix emptyLineMatrix = new Matrix(emptyLine);
+		        if(currentDebugLevel >= debugLevel3) emptyLineMatrix.print();
+		        oScreen.paste(emptyLineMatrix, 0, iScreenDw); // 빈 라인을 맨 윗줄에 붙인다.	
+		        //printScreen(oScreen); System.out.println();
+		        
+		        // 한번에 여러 줄이 삭제될 수도 있음. 따라서 계속 검사.
+		        fullLine = oScreen.findFullLine(iScreenDw); 
+		    	if(currentDebugLevel >= debugLevel3) System.out.println("FullLine검사, 해당되는 라인(-1이라면 없음) : " + fullLine);
+		    	// findFullLine 함수는 fullLine인 줄의 number를 리턴함. fullLine이 없다면 -1을 리턴함.
+			}catch(Exception e){
+				System.out.println(e);
+			}
+		}
+	}
+	// end of Matrix	 
 }
 	
 	class MatrixException extends Exception {

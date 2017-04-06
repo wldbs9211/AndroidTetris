@@ -1,9 +1,5 @@
 package tetris;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 enum TetrisState{
 	Start(0), Running(1), NewBlock(2), End(3), Error(4);
 	private final int value;
@@ -26,9 +22,6 @@ public class Tetris {
 	private final static int debugLevel3 = 3;	// 특정 이벤트가 발생한 상황에서 변수의 변화 등에 대한 정보.
 	
 	private static int iScreenDw = 4;
-	private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    private static String line = null;
-    private static int nKeys = 0;
     private static int numberOfBlockTypes;	
 	private static int numberOfDegrees;
 	private static Matrix[][] setOfBlockObjects;
@@ -102,6 +95,7 @@ public class Tetris {
     	if(cy < iScreenDw || cx < iScreenDw)
     		throw new TetrisException("too small screen");
     	
+    	// ?? 반복되는 코드 accept에도 있음. 바꾸길.
     	iScreenDy = cy;
     	iScreenDx = cx;
     	iScreen = new Matrix(createArrayScreen(iScreenDy,iScreenDx, iScreenDw));
