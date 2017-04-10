@@ -239,21 +239,26 @@ public class Tetris {
      * - 현재 프로그램의 상태 리턴 
      */
     public TetrisState accept(char key) throws Exception {
-        int idxType;
-
-        /* ??
-        if(tetrisState == TetrisState.NewBlock){	// 새로운 블록이 필요한 경우라면..					//if(key == '0')					   
-    		iScreen = new Matrix(oScreen);	// 마지막 상태 iScreen에 저장.	// 이것은 일단 필요한 동작은 아니야.. 하지만 그냥 넣어둬보자.
-    		top = 0;	
-            left = iScreenDw + iScreenDx/2 - 2;
-            blkDegree = 0;	// 각도 0으로.
-            tetrisState = TetrisState.NewBlock;	
-    	}
-    	*/
-        
-        if(currentDebugLevel >= debugLevel3) System.out.println("Key 들어오기 전 State : " + tetrisState);
+    	if(currentDebugLevel >= debugLevel3) System.out.println("Key 들어오기 전 State : " + tetrisState);
         if(currentDebugLevel >= debugLevel3) System.out.println("들어온 key : " + key);
+    	int idxType;
+    	// TetrisActions이 초기화 되지 않았다면 초기화 시켜줌.
+        if(tetrisActionsInitialized == false){	
+        	setTetrisActions();
+        	tetrisActionsInitialized = true;
+        	tetrisState = TetrisState.NewBlock;
+        }
+
+        // NewBlock 상태에서 동작
+        if(tetrisState == TetrisState.NewBlock){											   
+    		if(insertBlk.run(key, true) == true)	// 새 블록이 바로 충돌을 하면 게임종료 조건임.
+    			tetrisState = TetrisState.Finished;	// 게임 끝.
+    		else
+    			tetrisState = TetrisState.Running;	// 진행.
+    		return tetrisState;
+    	}
         
+        /*
         // Start 혹은 NewBlock 상태에서만 현재 블록을 변경시킴, 나머지는 조작 상태이기 때문에 idxType을 바꿀 필요가 없음.
         if(tetrisState == TetrisState.Start || tetrisState == TetrisState.NewBlock){
         	idxType = key - '0';
@@ -270,7 +275,7 @@ public class Tetris {
         //int top = 0;
         //int left = iScreenDw + iScreenDx/2 - 2;
         //int[][] arrayScreen = createArrayScreen(iScreenDy, iScreenDx, iScreenDw);
-        //char key;
+        /1/char key;
         //Matrix iScreen = new Matrix(arrayScreen);
         
         // 기존의 난수 생성은 삭제한다.
@@ -294,43 +299,55 @@ public class Tetris {
         // Matrix oScreen = new Matrix(iScreen);
         oScreen.paste(tempBlk, top, left);
         //printScreen(); System.out.println();
+		*/
 
         //while ((key = getKey()) != 'q') {
             switch (key) {
                 case 'a':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 왼쪽 이동.");
                     //left--;
-                	onLeft.run(key);
+                	//onLeft.run(key);
+                	moveLeft.run(key, true);
                     break;
                 case 'd':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 오른쪽 이동.");
                     //left++;
-                	onRight.run(key);
+                	//onRight.run(key);
+                	moveRight.run(key,  true);
                     break;
                 case 's':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 아래로 이동. top 변화 전 : " + top);
                     //top++;
-                    onDown.run(key);
+                    //onDown.run(key);
+                	if(moveDown.run(key,  true) == true) tetrisState = TetrisState.NewBlock;	// 아래로 보내보고, 충돌이 있다면 새 블록 상태로.
                     if(currentDebugLevel >= debugLevel2) System.out.println("블록 아래로 이동. top 변화 후: " + top);
                     break;
                 case 'w':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록을 회전시킵니다.");
+                	/*
                 	blkDegree = (blkDegree + 1) % 4;
                 	currBlk = setOfBlockObjects[blkType][blkDegree];
+                	*/
                 	//onCW.run(key);
+                	rotateCW.run(key, true);
                 	if(currentDebugLevel >= debugLevel3) System.out.println("blkDegree : " + blkDegree);
                     break;
                 case ' ':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록을 끝까지 내립니다.");
-                	// 바닥에 닿기 전까지 한칸씩 내려가며 충돌하나 비교한다.
-                    while (!tempBlk.anyGreaterThan(1)){ // 충돌까지 내린다.
+                    /*
+                    // 바닥에 닿기 전까지 한칸씩 내려가며 충돌하나 비교한다.
+                	while (!tempBlk.anyGreaterThan(1)){ // 충돌까지 내린다.
                     	//top ++;	// 내리고.
                     	onDown.run(key);
                     	tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx()); // 갱신하고.
                         tempBlk = tempBlk.add(currBlk); // 현재 블록 넣고.
                     	if(currentDebugLevel >= debugLevel3) System.out.println("블록을 하나 내려봅니다. top : " + top );
                     }
-                    // 여기까지 왔다면 블록은 현재 충돌된 상태임. 아래 최종 작업에서 top을 하나 빼주어야함.
+					// 여기까지 왔다면 블록은 현재 충돌된 상태임. 아래 최종 작업에서 top을 하나 빼주어야함.
+                    */
+                	while(moveDown.run(key, false) == false);	// 바닥 충돌을 안했다면 계속 내린다. 화면 업데이트는 하지 않음.
+                	moveDown.run(key,  true);
+                	tetrisState = TetrisState.NewBlock;
                     break;
                 default :
                 	// 잘못된 key의 경우 이쪽이 실행된다.
@@ -343,6 +360,7 @@ public class Tetris {
 	                	return tetrisState;	// 에러인 경우에는 아래를 실행하지 않고 끝내자.
                 	}
             }
+            /*
             tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx());
             tempBlk = tempBlk.add(currBlk);
             if (tempBlk.anyGreaterThan(1)) {
@@ -362,11 +380,11 @@ public class Tetris {
                         break;
                     case 'w':
                     	if(currentDebugLevel >= debugLevel2) System.out.println("블록이 회전 과정에서 충돌하였음. 이전으로 돌아감");
-                    	/*
-                    	blkDegree = blkDegree - 1;	// Degree를 이전으로 돌림.
-                    	if(blkDegree == -1) blkDegree = 3; // 회전 : 3 -> 0 , 충돌 : 0 -> -1 케이스니 3으로 되돌림.
-                    	currBlk = setOfBlockObjects[blkType][blkDegree];
-                    	*/
+                    	
+                    	//blkDegree = blkDegree - 1;	// Degree를 이전으로 돌림.
+                    	//if(blkDegree == -1) blkDegree = 3; // 회전 : 3 -> 0 , 충돌 : 0 -> -1 케이스니 3으로 되돌림.
+                    	//currBlk = setOfBlockObjects[blkType][blkDegree];
+                    	
                     	onCCW.run(key);
                         break;
                     case ' ':
@@ -380,6 +398,7 @@ public class Tetris {
                 tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx());
                 tempBlk = tempBlk.add(currBlk);
             }
+            
             oScreen = new Matrix(iScreen);
             oScreen.paste(tempBlk, top, left);
             //printScreen(); System.out.println();
@@ -392,7 +411,9 @@ public class Tetris {
                 left = iScreenDw + iScreenDx/2 - 2;
                 blkDegree = 0;	// 각도 0으로.
         	}
-        	
+        	*/
+            
+            oScreen.fullLineDelete(oScreen, iScreenDw, iScreenDx);
         	if(currentDebugLevel >= debugLevel3) System.out.println("accept 처리 후 State : " + tetrisState);
             return tetrisState;
     }

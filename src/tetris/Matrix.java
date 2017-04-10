@@ -145,7 +145,7 @@ public class Matrix {
     	return -1; // -1을 리턴하는 경우라면 FullLine이 없다는 것임.
     }
 	
-	public void fullLineDelete(Matrix oScreen, int iScreenDw, Matrix tempBlk, int iScreenDx ){
+	public void fullLineDelete(Matrix oScreen, int iScreenDw, int iScreenDx ){
 		// 여기에 FullLineDetect
 		if(currentDebugLevel >= debugLevel3) System.out.println("fullLineDelete");
 		int fullLine = oScreen.findFullLine(iScreenDw);
@@ -156,6 +156,7 @@ public class Matrix {
 			try{
 				// 잘라내는 작업.
 		        //tempBlk = oScreen.clip(0, iScreenDw, fullLine, iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽은 복사 안함.
+				Matrix tempBlk;
 				tempBlk = oScreen.clip(0, 0, fullLine, 2*iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽 포함.
 				// 자른 블록 표시.
 		        if(currentDebugLevel >= debugLevel3) tempBlk.print();	
