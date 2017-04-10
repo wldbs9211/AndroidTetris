@@ -159,12 +159,10 @@ public class Tetris {
     }
     class OnNewBlock implements ActionHandler {
     	public void run(char key) throws Exception {
-    		// ??
-    		/*
-    		if(isJustStarted == false)
-    			oScreen = deleteFullLines(oScreen, currBlk, top, iScreenDy);
+    		if(isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
+    			oScreen.fullLineDelete(oScreen, iScreenDw, iScreenDx);
     		isJustStarted = false;
-    		*/
+    		
     		iScreen = new Matrix(oScreen);
     		top = 0;
     		left = iScreenDw + iScreenDx/2 - 2;
@@ -412,8 +410,6 @@ public class Tetris {
                 blkDegree = 0;	// 각도 0으로.
         	}
         	*/
-            
-            oScreen.fullLineDelete(oScreen, iScreenDw, iScreenDx);
         	if(currentDebugLevel >= debugLevel3) System.out.println("accept 처리 후 State : " + tetrisState);
             return tetrisState;
     }
