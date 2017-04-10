@@ -26,6 +26,8 @@ public class Tetris {
 	private static int numberOfDegrees;
 	private static Matrix[][] setOfBlockObjects;
 	
+	private boolean tetrisActionsInitialized = false;
+	private boolean isJustStarted = true;
 	private int iScreenDy;
     private int iScreenDx;
     private int blkType = 0;
@@ -158,9 +160,11 @@ public class Tetris {
     class OnNewBlock implements ActionHandler {
     	public void run(char key) throws Exception {
     		// ??
-    		//if(isJustStarted == false)
-    		//	oScreen = deleteFullLines(oScreen, currBlk, top, iScreenDy);
-    		//isJustStarted = false;
+    		/*
+    		if(isJustStarted == false)
+    			oScreen = deleteFullLines(oScreen, currBlk, top, iScreenDy);
+    		isJustStarted = false;
+    		*/
     		iScreen = new Matrix(oScreen);
     		top = 0;
     		left = iScreenDw + iScreenDx/2 - 2;
@@ -184,6 +188,39 @@ public class Tetris {
     private OnFinished onFinished = new OnFinished();
     
     
+    class TetrisAction{
+    	private ActionHandler hDo, hUndo;
+    	public TetrisAction(ActionHandler d, ActionHandler u){
+    		hDo = d;
+    		hUndo = u;
+    	}
+    	public boolean run(char key, boolean update) throws Exception{
+    		boolean anyConflict = false;
+    		hDo.run(key);
+    		Matrix tempBlk;
+    		tempBlk = iScreen.clip(top, left, top+currBlk.get_dy(), left+currBlk.get_dx());
+    		tempBlk = tempBlk.add(currBlk);
+    		if ((anyConflict = tempBlk.anyGreaterThan(1)) == true){
+    			hUndo.run(key);
+    			tempBlk = iScreen.clip(top, left, top+currBlk.get_dy(), left+currBlk.get_dx());
+    			tempBlk = tempBlk.add(currBlk);
+    		}
+    		if(update == true){
+    			oScreen = new Matrix(iScreen);
+    			oScreen.paste(tempBlk, top, left);
+    		}
+    		return anyConflict;
+    	}
+    }
+    private TetrisAction moveLeft, moveRight, moveDown, rotateCW, insertBlk;
+    private void setTetrisActions(){
+    	moveLeft = new TetrisAction(onLeft, onRight);
+    	moveRight = new TetrisAction(onRight, onLeft);
+    	moveDown = new TetrisAction(onDown, onUp);
+    	rotateCW = new TetrisAction(onCW, onCCW);
+    	insertBlk = new TetrisAction(onNewBlock, onFinished);
+    }
+    
     /*
      * 입력
      * 1. 입력한 키 값 -> key
@@ -203,9 +240,9 @@ public class Tetris {
      */
     public TetrisState accept(char key) throws Exception {
         int idxType;
-        
-        /* ?? 
-        if(newBlockNeeded){	// 새로운 블록이 필요한 경우라면..					//if(key == '0')					   
+
+        /* ??
+        if(tetrisState == TetrisState.NewBlock){	// 새로운 블록이 필요한 경우라면..					//if(key == '0')					   
     		iScreen = new Matrix(oScreen);	// 마지막 상태 iScreen에 저장.	// 이것은 일단 필요한 동작은 아니야.. 하지만 그냥 넣어둬보자.
     		top = 0;	
             left = iScreenDw + iScreenDx/2 - 2;
