@@ -7,54 +7,6 @@ enum TetrisState{
 	public int value() { return value; }
 }
 
-//lab 5.1
-interface ActionHandler {
-	public void run(Tetris t, char key) throws Exception;
-}
-class OnLeft implements ActionHandler {
-	public void run(Tetris t, char key) { t.left = t.left - 1; }
-}
-class OnRight implements ActionHandler {
-	public void run(Tetris t, char key) { t.left = t.left + 1; }
-}
-class OnDown implements ActionHandler {
-	public void run(Tetris t, char key) { t.top = t.top + 1; }
-}
-class OnUp implements ActionHandler {
-	public void run(Tetris t, char key) { t.top = t.top - 1; }
-}
-class OnCW implements ActionHandler {
-	public void run(Tetris t, char key) {
-		t.idxBlockDegree = (t.idxBlockDegree + 1) % t.nBlockDegrees;
-		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];
-	}
-}
-class OnCCW implements ActionHandler {
-	public void run (Tetris t, char key) {
-		t.idxBlockDegree = (t.idxBlockDegree + 3) % t.nBlockDegrees;
-		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];
-	}
-}
-class OnNewBlock implements ActionHandler {
-	public void run(Tetris t, char key) throws Exception {
-		if(t.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
-			t.oScreen.fullLineDelete(t.oScreen, t.iScreenDw, t.iScreenDx);
-		t.isJustStarted = false;
-		
-		t.iScreen = new Matrix(t.oScreen);
-		t.top = 0;
-		t.left = t.iScreenDw + t.iScreenDx/2 - 2;
-		t.idxBlockType = key - '0';
-		t.idxBlockDegree = 0;
-		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];
-	}
-}
-class OnFinished implements ActionHandler{
-	public void run(Tetris t, char key) {
-		System.out.println("OnFinished.run(); called");
-	}
-}
-
 public class Tetris {
 	/*
 	 * 디버그 레벨에 따라서 출력여부를 결정한다.
@@ -64,23 +16,23 @@ public class Tetris {
 	 * 예) currentDebugLevel의 값이 1이면, debugLevel 1만 출력 ( 프로그램의 흐름에 대한 정보만 )
 	 * 예) currentDebugLevel의 값이 0이면, 아무것도 출력하지 않음. 
 	 */
-	private final static int currentDebugLevel = 3;	// 현재 디버그 레벨.
+	private final static int currentDebugLevel = 0;	// 현재 디버그 레벨.
 	private final static int debugLevel1 = 1;	// 프로그램의 흐름에 대한 정보. 
 	private final static int debugLevel2 = 2;	// 프로그램에서 어떠한 이벤트에 대한 정보.
 	private final static int debugLevel3 = 3;	// 특정 이벤트가 발생한 상황에서 변수의 변화 등에 대한 정보.
 
-    private static int numberOfBlockTypes;
     private TetrisState tetrisState;
 	private boolean tetrisActionsInitialized = false;
-
+	private static int nBlockTypes;
+	
 	protected static int iScreenDw;
     protected static int nBlockDegrees;
     protected static Matrix[][] setOfBlockObjects;
-	protected boolean isJustStarted; // ??
+	protected boolean isJustStarted; 
 	protected int iScreenDy;
 	protected int iScreenDx;
 	protected int idxBlockType = 0;
-	protected int idxBlockDegree; // ??
+	protected int idxBlockDegree;  
     protected int top;
     protected int left;    
     // Matrix iScreen = new Matrix(createArrayScreen(iScreenDy,iScreenDx, iScreenDw));
@@ -127,12 +79,12 @@ public class Tetris {
      * 출력 : 2차원 Matrix 배열 
      */
     public static void init(int[][][][] setOfBlkArrays) throws MatrixException{
-    	numberOfBlockTypes = setOfBlkArrays.length;
+    	nBlockTypes = setOfBlkArrays.length;
     	nBlockDegrees = setOfBlkArrays[0].length;
     	
-    	setOfBlockObjects = new Matrix[numberOfBlockTypes][nBlockDegrees];
+    	setOfBlockObjects = new Matrix[nBlockTypes][nBlockDegrees];
     	
-    	for(int t = 0; t < numberOfBlockTypes; t++){
+    	for(int t = 0; t < nBlockTypes; t++){
     		for(int d = 0; d < nBlockDegrees; d++){
     			setOfBlockObjects[t][d] = new Matrix(setOfBlkArrays[t][d]);
     		}
@@ -153,9 +105,7 @@ public class Tetris {
     	oScreen = new Matrix(iScreen);
         top = 0;
         left = iScreenDw + iScreenDx/2 - 2;
-        tetrisState = TetrisState.Start;
-        
-        //?? 
+        tetrisState = TetrisState.Start; 
         idxBlockDegree = 0;
         isJustStarted = true;
     }
@@ -363,7 +313,7 @@ public class Tetris {
                     break;
                 default :
                 	// 잘못된 key의 경우 이쪽이 실행된다.
-                	if( (0 <= key - '0') && ( key - '0' < numberOfBlockTypes)){ // 숫자의 경우는 새로운 블록을 요청이니 제외함.
+                	if( (0 <= key - '0') && ( key - '0' < nBlockTypes)){ // 숫자의 경우는 새로운 블록을 요청이니 제외함.
                 		if(currentDebugLevel >= debugLevel2) System.out.println("BlockType이 입력으로 들어옴");
                 	}else{	// 숫자가 아닌 경우는 State를 Error로 변경함.
 	                	if(currentDebugLevel >= debugLevel2) System.out.println("잘못된 key의 입력, key : " + key);
@@ -426,10 +376,125 @@ public class Tetris {
         	*/
         	if(currentDebugLevel >= debugLevel3) System.out.println("accept 처리 후 State : " + tetrisState);
             return tetrisState;
+    }    
+    
+    /*	입력 : screenDw(벽의 길이)
+	 *	기능 : Matrix Class에서 바닥부터 올라오며 가장 먼저 FullLine을 만족하는 행을 리턴함.
+	 *	출력 : 가장 먼저 FullLine을 만족하는 행의 숫자(int)
+	 *  	  FullLine을 만족하는 행이 없다면 -1을 리턴
+	 */
+	public int findFullLine(Matrix screen){
+    	for(int i = iScreenDy -iScreenDw - 1; i >= 0; i--){	// 바닥에서 위로 올라오며 검사한다.
+    		if(currentDebugLevel >= debugLevel3) System.out.println("풀라인 검사 : " + i + "번 행." );
+    		boolean fullLineFlag = true; // FullLine이 검출되었는가 검사하는 flag
+    		for(int j = iScreenDw; j < iScreenDx - iScreenDw; j++ ){
+        		if(currentDebugLevel >= debugLevel3) System.out.println("풀라인 검사 : " + j + "번 열." );
+    			if(screen.get_array()[i][j] == 0){
+    				if(currentDebugLevel >= debugLevel3) System.out.println("FullLine 아님." );
+    				fullLineFlag = false;
+    			}
+    		}
+    		if(currentDebugLevel >= debugLevel3) System.out.println(i + "번 행은 FullLine? : " + fullLineFlag);
+    		if(fullLineFlag == true) return i;	// 가장 먼저 만나는 FullLine을 리턴한다.
+    	}
+    	return -1; // -1을 리턴하는 경우라면 FullLine이 없다는 것임.
     }
+	
+	public Matrix fullLineDelete(Matrix screen){
+		// 여기에 FullLineDetect
+		if(currentDebugLevel >= debugLevel3) System.out.println("fullLineDelete");
+		int fullLine = screen.findFullLine(iScreenDw);
+		if(currentDebugLevel >= debugLevel3) System.out.println("FullLine검사, 해당되는 라인(-1이라면 없음) : " + fullLine);
+		// findFullLine 함수는 fullLine인 줄의 number를 리턴함. fullLine이 없다면 -1을 리턴함.
+		
+		while(fullLine > 0){	// fullLine이 검출된 경우, 루프를 돌면서 FullLine이 사라질 때까지 검사.
+			try{
+				// 잘라내는 작업.
+		        //tempBlk = oScreen.clip(0, iScreenDw, fullLine, iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽은 복사 안함.
+				Matrix tempBlk;
+				tempBlk = screen.clip(0, 0, fullLine, 2*iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽 포함.
+				// 자른 블록 표시.
+		        if(currentDebugLevel >= debugLevel3) tempBlk.print();	
+		        // 붙이는 작업.
+		        //oScreen.paste(tempBlk, 1, iScreenDw);	// 잘랐던 블록들을 붙여넣는다. 한칸 아래로 가니까 인자 2번 1, left는 iScreenDw
+		        screen.paste(tempBlk, 1, 0);	// 잘랐던 블록들을 붙여넣는다. 벽 포함.
+		        //printScreen(oScreen); System.out.println();        
+		        
+		        // 맨 윗줄 처리와 관련된 부분이다.
+		        if(currentDebugLevel >= debugLevel3) System.out.println("맨 윗줄 처리.");
+		        //한칸 내려오면 맨 윗칸은 모두 0으로 바꿔야함.
+		        //int[][] emptyLine = createArrayScreen(1,iScreenDx, 0);	// 여기서는 이것을 쓰지 못함.
+		        
+		        // 예) Matrix(1,10) , 0 0 0 0 0 0 0 0 0 0, 빈 라인 만들기 위함.  
+		        int[][] emptyLine = new int[1][iScreenDx];
+		        for(int i = 0; i < iScreenDx; i++) emptyLine[0][i] = 0;
+		        
+		        Matrix emptyLineMatrix = new Matrix(emptyLine);
+		        if(currentDebugLevel >= debugLevel3) emptyLineMatrix.print();
+		        screen.paste(emptyLineMatrix, 0, iScreenDw); // 빈 라인을 맨 윗줄에 붙인다.	
+		        //printScreen(oScreen); System.out.println();
+		        
+		        // 한번에 여러 줄이 삭제될 수도 있음. 따라서 계속 검사.
+		        fullLine = screen.findFullLine(iScreenDw); 
+		    	if(currentDebugLevel >= debugLevel3) System.out.println("FullLine검사, 해당되는 라인(-1이라면 없음) : " + fullLine);
+		    	// findFullLine 함수는 fullLine인 줄의 number를 리턴함. fullLine이 없다면 -1을 리턴함.
+			}catch(Exception e){
+				System.out.println(e);
+			}
+		}
+		return screen;
+	}
 }
 
 class TetrisException extends Exception {
 	public TetrisException() { super("Tetris Exception"); }
 	public TetrisException(String msg) { super(msg); }
+}
+
+interface ActionHandler {
+	public void run(Tetris t, char key) throws Exception;
+}
+class OnLeft implements ActionHandler {
+	public void run(Tetris t, char key) { t.left = t.left - 1; }
+}
+class OnRight implements ActionHandler {
+	public void run(Tetris t, char key) { t.left = t.left + 1; }
+}
+class OnDown implements ActionHandler {
+	public void run(Tetris t, char key) { t.top = t.top + 1; }
+}
+class OnUp implements ActionHandler {
+	public void run(Tetris t, char key) { t.top = t.top - 1; }
+}
+class OnCW implements ActionHandler {
+	public void run(Tetris t, char key) {
+		t.idxBlockDegree = (t.idxBlockDegree + 1) % t.nBlockDegrees;
+		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];
+	}
+}
+class OnCCW implements ActionHandler {
+	public void run (Tetris t, char key) {
+		t.idxBlockDegree = (t.idxBlockDegree + 3) % t.nBlockDegrees;
+		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];
+	}
+}
+class OnNewBlock implements ActionHandler {
+	public void run(Tetris t, char key) throws Exception {
+		if(t.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
+			//t.oScreen.fullLineDelete(t.oScreen, t.iScreenDw, t.iScreenDx);
+			t.oScreen = t.fullLineDelete(t.oScreen);	//???
+		t.isJustStarted = false;
+		
+		t.iScreen = new Matrix(t.oScreen);
+		t.top = 0;
+		t.left = t.iScreenDw + t.iScreenDx/2 - 2;
+		t.idxBlockType = key - '0';
+		t.idxBlockDegree = 0;
+		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];
+	}
+}
+class OnFinished implements ActionHandler{
+	public void run(Tetris t, char key) {
+		System.out.println("OnFinished.run(); called");
+	}
 }

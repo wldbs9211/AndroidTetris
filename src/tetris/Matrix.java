@@ -145,7 +145,7 @@ public class Matrix {
     	return -1; // -1을 리턴하는 경우라면 FullLine이 없다는 것임.
     }
 	
-	public void fullLineDelete(Matrix oScreen, int iScreenDw, int iScreenDx ){
+	public void fullLineDelete(Matrix oScreen, int iScreenDw, int iScreenDx){
 		// 여기에 FullLineDetect
 		if(currentDebugLevel >= debugLevel3) System.out.println("fullLineDelete");
 		int fullLine = oScreen.findFullLine(iScreenDw);
