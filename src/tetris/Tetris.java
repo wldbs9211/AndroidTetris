@@ -379,13 +379,13 @@ public class Tetris {
     }    
     
 	public int findFullLine(Matrix screen){
-		if(currentDebugLevel >= debugLevel3) System.out.println("iScreenDy : " + iScreenDy); 
-		if(currentDebugLevel >= debugLevel3) System.out.println("iScreenDw : " + iScreenDw); 
-    	for(int i = iScreenDy -1; i >= 0; i--){	// 바닥에서 위로 올라오며 검사한다.
+		if(currentDebugLevel >= debugLevel3) System.out.println("iScreenDy : " + this.iScreenDy); 
+		if(currentDebugLevel >= debugLevel3) System.out.println("iScreenDw : " + this.iScreenDw); 
+    	for(int i = this.iScreenDy -1; i >= 0; i--){	// 바닥에서 위로 올라오며 검사한다.
     		if(currentDebugLevel >= debugLevel3) System.out.println("풀라인 검사 : " + i + "번 행." );
     		boolean fullLineFlag = true; // FullLine이 검출되었는가 검사하는 flag
     		if(currentDebugLevel >= debugLevel3) System.out.println("iScreenDx : " + iScreenDx); 
-    		for(int j = iScreenDw; j < iScreenDx + iScreenDw; j++ ){
+    		for(int j = this.iScreenDw; j < this.iScreenDx + this.iScreenDw; j++ ){
         		if(currentDebugLevel >= debugLevel3) System.out.println("j : " + j );
     			if(screen.get_array()[i][j] == 0){
     				if(currentDebugLevel >= debugLevel3) System.out.println("FullLine 아님." );

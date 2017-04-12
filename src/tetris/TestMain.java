@@ -14,7 +14,7 @@ public class TestMain {
 	 * 예) currentDebugLevel의 값이 1이면, debugLevel 1만 출력 ( 프로그램의 흐름에 대한 정보만 )
 	 * 예) currentDebugLevel의 값이 0이면, 아무것도 출력하지 않음. 
 	 */
-	private final static int currentDebugLevel = 0;	// 현재 디버그 레벨.
+	private final static int currentDebugLevel = 3;	// 현재 디버그 레벨.
 	private final static int debugLevel1 = 1;	// 프로그램의 흐름에 대한 정보. 
 	private final static int debugLevel2 = 2;	// 프로그램에서 어떠한 이벤트에 대한 정보.
 	private final static int debugLevel3 = 3;	// 특정 이벤트가 발생한 상황에서 변수의 변화 등에 대한 정보.
@@ -232,11 +232,30 @@ public class TestMain {
         		t.left = t.iScreenDw + t.iScreenDx/2 - 2;
         		t.idxBlockType = key - '0';
         		t.idxBlockDegree = 0;
-        		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];
+        		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];        		
         	}
-    		// ?? 
+    		
     		//deltefullLine
+    		public Matrix fullLineDelete(Matrix screen, Tetris tetris){
+    			int fullLine = tetris.findFullLine(screen);
+    			while(fullLine > 0){
+    				try{
+    					Matrix tempBlk;
+    					tempBlk = screen.clip(0, 0, fullLine, 2*tetris.iScreenDw + tetris.iScreenDx);	
+    			        screen.paste(tempBlk, 1, 0);	  
+    			        int[][] emptyLine = new int[1][tetris.iScreenDx];
+    			        for(int i = 0; i < tetris.iScreenDx; i++) emptyLine[0][i] = 0;
+    			        Matrix emptyLineMatrix = new Matrix(emptyLine);
+    			        screen.paste(emptyLineMatrix, 0, tetris.iScreenDw); 	
+    			        fullLine = tetris.findFullLine(screen); 
+    				}catch(Exception e){
+    					System.out.println(e);
+    				}
+    			}
+    			return screen;
+    		}
     	};
+    	
     	OnFinished myOnFinished = new OnFinished() {
     		public void run(Tetris t, char key){
     			System.out.println("OnFinished.run(); called");
