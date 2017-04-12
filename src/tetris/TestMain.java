@@ -224,7 +224,7 @@ public class TestMain {
     	OnNewBlock myOnNewBlock = new OnNewBlock() {
     		public void run(Tetris t, char key) throws Exception {
         		if(t.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
-        			t.oScreen = t.fullLineDelete(t.oScreen);
+        			fullLineDelete(t);	// 이전과는 다르게 아래 새롭게 만든 fullLineDelete를 사용함.
         		t.isJustStarted = false;
         		
         		t.iScreen = new Matrix(t.oScreen);
@@ -236,23 +236,23 @@ public class TestMain {
         	}
     		
     		//deltefullLine
-    		public Matrix fullLineDelete(Matrix screen, Tetris tetris){
-    			int fullLine = tetris.findFullLine(screen);
+    		public void fullLineDelete(Tetris tetris){
+    			int fullLine = tetris.findFullLine(tetris.oScreen);
     			while(fullLine > 0){
     				try{
     					Matrix tempBlk;
-    					tempBlk = screen.clip(0, 0, fullLine, 2*tetris.iScreenDw + tetris.iScreenDx);	
-    			        screen.paste(tempBlk, 1, 0);	  
+    					tempBlk = tetris.oScreen.clip(0, 0, fullLine, 2*tetris.iScreenDw + tetris.iScreenDx);	
+    					tetris.oScreen.paste(tempBlk, 1, 0);	  
     			        int[][] emptyLine = new int[1][tetris.iScreenDx];
     			        for(int i = 0; i < tetris.iScreenDx; i++) emptyLine[0][i] = 0;
     			        Matrix emptyLineMatrix = new Matrix(emptyLine);
-    			        screen.paste(emptyLineMatrix, 0, tetris.iScreenDw); 	
-    			        fullLine = tetris.findFullLine(screen); 
+    			        tetris.oScreen.paste(emptyLineMatrix, 0, tetris.iScreenDw); 	
+    			        fullLine = tetris.findFullLine(tetris.oScreen); 
     				}catch(Exception e){
     					System.out.println(e);
     				}
     			}
-    			return screen;
+    			return ;
     		}
     	};
     	

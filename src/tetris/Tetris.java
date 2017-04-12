@@ -482,7 +482,6 @@ class OnNewBlock implements ActionHandler {
 			t.oScreen = t.fullLineDelete(t.oScreen);
 
 		t.isJustStarted = false;
-		
 		t.iScreen = new Matrix(t.oScreen);
 		t.top = 0;
 		t.left = t.iScreenDw + t.iScreenDx/2 - 2;
