@@ -224,7 +224,7 @@ public class TestMain {
     	OnNewBlock myOnNewBlock = new OnNewBlock() {
     		public void run(Tetris t, char key) throws Exception {
         		if(t.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
-        			t.oScreen.fullLineDelete(t.oScreen, t.iScreenDw, t.iScreenDx);
+        			t.oScreen = t.fullLineDelete(t.oScreen);
         		t.isJustStarted = false;
         		
         		t.iScreen = new Matrix(t.oScreen);

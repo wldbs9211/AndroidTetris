@@ -378,17 +378,15 @@ public class Tetris {
             return tetrisState;
     }    
     
-    /*	입력 : screenDw(벽의 길이)
-	 *	기능 : Matrix Class에서 바닥부터 올라오며 가장 먼저 FullLine을 만족하는 행을 리턴함.
-	 *	출력 : 가장 먼저 FullLine을 만족하는 행의 숫자(int)
-	 *  	  FullLine을 만족하는 행이 없다면 -1을 리턴
-	 */
 	public int findFullLine(Matrix screen){
-    	for(int i = iScreenDy -iScreenDw - 1; i >= 0; i--){	// 바닥에서 위로 올라오며 검사한다.
+		if(currentDebugLevel >= debugLevel3) System.out.println("iScreenDy : " + iScreenDy); 
+		if(currentDebugLevel >= debugLevel3) System.out.println("iScreenDw : " + iScreenDw); 
+    	for(int i = iScreenDy -1; i >= 0; i--){	// 바닥에서 위로 올라오며 검사한다.
     		if(currentDebugLevel >= debugLevel3) System.out.println("풀라인 검사 : " + i + "번 행." );
     		boolean fullLineFlag = true; // FullLine이 검출되었는가 검사하는 flag
-    		for(int j = iScreenDw; j < iScreenDx - iScreenDw; j++ ){
-        		if(currentDebugLevel >= debugLevel3) System.out.println("풀라인 검사 : " + j + "번 열." );
+    		if(currentDebugLevel >= debugLevel3) System.out.println("iScreenDx : " + iScreenDx); 
+    		for(int j = iScreenDw; j < iScreenDx + iScreenDw; j++ ){
+        		if(currentDebugLevel >= debugLevel3) System.out.println("j : " + j );
     			if(screen.get_array()[i][j] == 0){
     				if(currentDebugLevel >= debugLevel3) System.out.println("FullLine 아님." );
     				fullLineFlag = false;
@@ -403,7 +401,7 @@ public class Tetris {
 	public Matrix fullLineDelete(Matrix screen){
 		// 여기에 FullLineDetect
 		if(currentDebugLevel >= debugLevel3) System.out.println("fullLineDelete");
-		int fullLine = screen.findFullLine(iScreenDw);
+		int fullLine = findFullLine(screen);
 		if(currentDebugLevel >= debugLevel3) System.out.println("FullLine검사, 해당되는 라인(-1이라면 없음) : " + fullLine);
 		// findFullLine 함수는 fullLine인 줄의 number를 리턴함. fullLine이 없다면 -1을 리턴함.
 		
@@ -435,7 +433,7 @@ public class Tetris {
 		        //printScreen(oScreen); System.out.println();
 		        
 		        // 한번에 여러 줄이 삭제될 수도 있음. 따라서 계속 검사.
-		        fullLine = screen.findFullLine(iScreenDw); 
+		        fullLine = findFullLine(screen); 
 		    	if(currentDebugLevel >= debugLevel3) System.out.println("FullLine검사, 해당되는 라인(-1이라면 없음) : " + fullLine);
 		    	// findFullLine 함수는 fullLine인 줄의 number를 리턴함. fullLine이 없다면 -1을 리턴함.
 			}catch(Exception e){
@@ -481,8 +479,8 @@ class OnCCW implements ActionHandler {
 class OnNewBlock implements ActionHandler {
 	public void run(Tetris t, char key) throws Exception {
 		if(t.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
-			//t.oScreen.fullLineDelete(t.oScreen, t.iScreenDw, t.iScreenDx);
-			t.oScreen = t.fullLineDelete(t.oScreen);	//???
+			t.oScreen = t.fullLineDelete(t.oScreen);
+
 		t.isJustStarted = false;
 		
 		t.iScreen = new Matrix(t.oScreen);

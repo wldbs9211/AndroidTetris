@@ -123,11 +123,13 @@ public class Matrix {
 	   }
 	}
 	
+	
 	/*	입력 : screenDw(벽의 길이)
 	 *	기능 : Matrix Class에서 바닥부터 올라오며 가장 먼저 FullLine을 만족하는 행을 리턴함.
 	 *	출력 : 가장 먼저 FullLine을 만족하는 행의 숫자(int)
 	 *  	  FullLine을 만족하는 행이 없다면 -1을 리턴
 	 */
+	/*
 	public int findFullLine(int screenDw){
     	for(int i = dy - screenDw - 1; i >= 0; i--){	// 바닥에서 위로 올라오며 검사한다.
     		if(currentDebugLevel >= debugLevel3) System.out.println("풀라인 검사 : " + i + "번 행." );
@@ -188,6 +190,7 @@ public class Matrix {
 			}
 		}
 	}
+	*/
 	// end of Matrix	 
 }
 	
