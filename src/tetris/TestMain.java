@@ -22,7 +22,7 @@ public class TestMain {
 	private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     private static String line = null;
     private static int nKeys = 0;
-
+  
     private static int[][][][] setOfBlockArrays = { // [7][4][?][?]  -> [종류][회전][가로][세로] 
     		{
     			{
@@ -179,8 +179,7 @@ public class TestMain {
     			}
     		}
     };
-    
-	private static char getKey() throws IOException {
+    private static char getKey() throws IOException {
         char ch;
         if (nKeys != 0) {
             ch = line.charAt(line.length() - nKeys);
@@ -197,13 +196,68 @@ public class TestMain {
     }
 	
     public static void main(String[] args) throws Exception {
+    	// 손가락을 만드는 과정. 자유롭게 기능을 바꿀 수 있도록..
+    	OnLeft myOnLeft = new OnLeft(){
+        	public void run(Tetris t, char key) { t.left = t.left - 1; }
+        };
+    	OnRight myOnRight = new OnRight(){
+        	public void run(Tetris t, char key) { t.left = t.left + 1; }
+        };
+    	OnDown myOnDown = new OnDown(){
+        	public void run(Tetris t, char key) { t.top = t.top + 1; }
+        };
+    	OnUp myOnUp = new OnUp(){
+    		public void run(Tetris t, char key) { t.top = t.top - 1; }
+        };
+    	OnCW myOnCW = new OnCW(){
+        	public void run(Tetris t, char key) {
+        		t.idxBlockDegree = (t.idxBlockDegree + 1) % t.nBlockDegrees;
+        		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];
+        	}
+        };
+    	OnCCW myOnCCW = new OnCCW(){
+    		public void run(Tetris t, char key) {
+        		t.idxBlockDegree = (t.idxBlockDegree + 3) % t.nBlockDegrees;
+        		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];
+        	}
+        };
+    	OnNewBlock myOnNewBlock = new OnNewBlock() {
+    		public void run(Tetris t, char key) throws Exception {
+        		if(t.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
+        			t.oScreen.fullLineDelete(t.oScreen, t.iScreenDw, t.iScreenDx);
+        		t.isJustStarted = false;
+        		
+        		t.iScreen = new Matrix(t.oScreen);
+        		t.top = 0;
+        		t.left = t.iScreenDw + t.iScreenDx/2 - 2;
+        		t.idxBlockType = key - '0';
+        		t.idxBlockDegree = 0;
+        		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];
+        	}
+    		// ?? 
+    		//deltefullLine
+    	};
+    	OnFinished myOnFinished = new OnFinished() {
+    		public void run(Tetris t, char key){
+    			System.out.println("OnFinished.run(); called");
+    		}
+    	};
+    	
         char key;
         int idxType;
         TetrisState state;
         Tetris.init(setOfBlockArrays);	// static method임. 객체를 생성한 적이 없지만 바로 접근이 가능. 공유, 정적
-        
         Tetris board = new Tetris(15, 10, setOfBlockArrays);	// 이것은 공유하지 않음. 동적
         //Tetris board2 = new Tetris(15, 12);	// 복수 객체 검증을 위함.
+        
+        board.setOnLeftListener(myOnLeft);
+        board.setOnRightListener(myOnRight);
+        board.setOnDownListener(myOnDown);
+        board.setOnUpListener(myOnUp);
+        board.setOnCWListener(myOnCW);
+        board.setOnCCWListener(myOnCCW);
+        board.setOnNewBlockListener(myOnNewBlock);
+        board.setOnFinishedListener(myOnFinished);
         
         Random random = new Random();
         idxType = random.nextInt(7);
