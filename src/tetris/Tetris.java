@@ -23,7 +23,7 @@ public class Tetris {
 
     private TetrisState tetrisState;
 	private boolean tetrisActionsInitialized = false;
-	private static int nBlockTypes;
+	protected static int nBlockTypes;
 	
 	protected static int iScreenDw;
     protected static int nBlockDegrees;
@@ -41,7 +41,7 @@ public class Tetris {
     protected Matrix oScreen = null;
     protected Matrix currBlk = null;
 
-    private static int[][] createArrayScreen(int dy, int dx, int dw) {
+    protected static int[][] createArrayScreen(int dy, int dx, int dw) {
         int y, x;
         int[][] array = new int[dy + dw][dx + 2 * dw];
         for (y = 0; y < array.length; y++)

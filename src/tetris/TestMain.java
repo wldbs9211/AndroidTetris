@@ -180,7 +180,7 @@ public class TestMain {
     		}
     };
     
-    private static int[][][][] setOfColorBlockArrays = { // [7][4][?][?]  -> [종류][회전][가로][세로] 
+    private static int[][][][] setOfCBlockArrays = { // [7][4][?][?]  -> [종류][회전][가로][세로] 
     		{
     			{
     				{0,0,0,0},
@@ -422,9 +422,8 @@ public class TestMain {
         char key;
         int idxType;
         TetrisState state;
-        CTetris.init(setOfBlockArrays);	// static method임. 객체를 생성한 적이 없지만 바로 접근이 가능. 공유, 정적
-        CTetris board = new CTetris(15, 10, setOfBlockArrays);	// 이것은 공유하지 않음. 동적
-        //Tetris board2 = new Tetris(15, 12);	// 복수 객체 검증을 위함.
+        CTetris.init(setOfBlockArrays, setOfCBlockArrays);
+        CTetris board = new CTetris(15, 10, setOfBlockArrays);
         
         board.setOnLeftListener(myOnLeft);
         board.setOnRightListener(myOnRight);
