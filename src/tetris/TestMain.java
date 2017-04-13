@@ -379,32 +379,32 @@ public class TestMain {
         	}
         };
     	OnCNewBlock myOnCNewBlock = new OnCNewBlock() {
-    		public void run(CTetris ct, char key) throws MatrixException{
-        		if(ct.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
-        			fullLineDelete(ct);	// 이전과는 다르게 아래 새롭게 만든 fullLineDelete를 사용함.
-        		ct.isJustStarted = false;
+    		public void run(Tetris t, char key) throws MatrixException{
+    			if(t.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
+        			fullLineDelete(t);	// 이전과는 다르게 아래 새롭게 만든 fullLineDelete를 사용함.
+        		t.isJustStarted = false;
         		
-        		ct.iScreen = new Matrix(ct.oScreen);
-        		ct.top = 0;
-        		ct.left = ct.iScreenDw + ct.iScreenDx/2 - 2;
-        		ct.idxBlockType = key - '0';
-        		ct.idxBlockDegree = 0;
-        		ct.currBlk = ct.setOfBlockObjects[ct.idxBlockType][ct.idxBlockDegree];        		
+        		t.iScreen = new Matrix(t.oScreen);
+        		t.top = 0;
+        		t.left = t.iScreenDw + t.iScreenDx/2 - 2;
+        		t.idxBlockType = key - '0';
+        		t.idxBlockDegree = 0;
+        		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];   
         	}
     		
     		//deltefullLine
-    		public void fullLineDelete(CTetris ct){
-    			int fullLine = ct.findFullLine(ct.oScreen);
+    		public void fullLineDelete(Tetris t){
+    			int fullLine = t.findFullLine(t.oScreen);
     			while(fullLine > 0){
     				try{
     					Matrix tempBlk;
-    					tempBlk = ct.oScreen.clip(0, 0, fullLine, 2*ct.iScreenDw + ct.iScreenDx);	
-    					ct.oScreen.paste(tempBlk, 1, 0);	  
-    			        int[][] emptyLine = new int[1][ct.iScreenDx];
-    			        for(int i = 0; i < ct.iScreenDx; i++) emptyLine[0][i] = 0;
+    					tempBlk = t.oScreen.clip(0, 0, fullLine, 2*t.iScreenDw + t.iScreenDx);	
+    					t.oScreen.paste(tempBlk, 1, 0);	  
+    			        int[][] emptyLine = new int[1][t.iScreenDx];
+    			        for(int i = 0; i < t.iScreenDx; i++) emptyLine[0][i] = 0;
     			        Matrix emptyLineMatrix = new Matrix(emptyLine);
-    			        ct.oScreen.paste(emptyLineMatrix, 0, ct.iScreenDw); 	
-    			        fullLine = ct.findFullLine(ct.oScreen); 
+    			        t.oScreen.paste(emptyLineMatrix, 0, t.iScreenDw); 	
+    			        fullLine = t.findFullLine(t.oScreen); 
     				}catch(Exception e){
     					System.out.println(e);
     				}
@@ -425,6 +425,7 @@ public class TestMain {
         CTetris.init(setOfBlockArrays, setOfCBlockArrays);
         CTetris board = new CTetris(15, 10, setOfBlockArrays);
         
+        /*
         board.setOnLeftListener(myOnCLeft);
         board.setOnRightListener(myOnCRight);
         board.setOnDownListener(myOnCDown);
@@ -433,6 +434,7 @@ public class TestMain {
         board.setOnCCWListener(myOnColorCCW);
         board.setOnNewBlockListener(myOnCNewBlock);
         board.setOnFinishedListener(myOnCFinished);
+        */
         
         Random random = new Random();
         idxType = random.nextInt(7);
@@ -441,7 +443,6 @@ public class TestMain {
         //board2.accept('0', idxType);	//board , board2에 동일한 key 전달
         board.printScreen(); System.out.println();
         //board2.printScreen(); System.out.println();
-        
         while((key = getKey()) != 'q'){
         	state = board.accept(key);
         	//board2.accept(key, idxType);	//board , board2에 동일한 key 전달

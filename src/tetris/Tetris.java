@@ -211,13 +211,14 @@ public class Tetris {
         	tetrisActionsInitialized = true;
         	tetrisState = TetrisState.NewBlock;
         }
-
         // NewBlock 상태에서 동작
-        if(tetrisState == TetrisState.NewBlock){											   
-    		if(insertBlk.run(this, key, true) == true)	// 새 블록이 바로 충돌을 하면 게임종료 조건임.
+        if(tetrisState == TetrisState.NewBlock){
+    		if(insertBlk.run(this, key, true) == true){	// 새 블록이 바로 충돌을 하면 게임종료 조건임.
     			tetrisState = TetrisState.Finished;	// 게임 끝.
-    		else
+    		}
+    		else{
     			tetrisState = TetrisState.Running;	// 진행.
+    		}
     		return tetrisState;
     	}
         
@@ -479,7 +480,6 @@ class OnCCW implements ActionHandler {
 }
 class OnNewBlock implements ActionHandler {
 	public void run(Tetris t, char key) throws Exception {
-		// ?? System.out.println("test1");
 		if(t.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
 			t.oScreen = t.fullLineDelete(t.oScreen);
 
