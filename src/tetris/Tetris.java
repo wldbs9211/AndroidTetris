@@ -165,8 +165,8 @@ public class Tetris {
     		return anyConflict;
     	}
     }
-    private TetrisAction moveLeft, moveRight, moveDown, rotateCW, insertBlk;
-    private void setTetrisActions(){
+    protected TetrisAction moveLeft, moveRight, moveDown, rotateCW, insertBlk;
+    protected void setTetrisActions(){
     	moveLeft = new TetrisAction(onLeft, onRight);
     	moveRight = new TetrisAction(onRight, onLeft);
     	moveDown = new TetrisAction(onDown, onUp);
@@ -204,6 +204,7 @@ public class Tetris {
     	if(currentDebugLevel >= debugLevel3) System.out.println("Key 들어오기 전 State : " + tetrisState);
         if(currentDebugLevel >= debugLevel3) System.out.println("들어온 key : " + key);
     	int idxType;
+    	
     	// TetrisActions이 초기화 되지 않았다면 초기화 시켜줌.
         if(tetrisActionsInitialized == false){	
         	setTetrisActions();
@@ -478,6 +479,7 @@ class OnCCW implements ActionHandler {
 }
 class OnNewBlock implements ActionHandler {
 	public void run(Tetris t, char key) throws Exception {
+		// ?? System.out.println("test1");
 		if(t.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
 			t.oScreen = t.fullLineDelete(t.oScreen);
 

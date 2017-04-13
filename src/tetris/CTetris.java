@@ -1,7 +1,5 @@
 package tetris;
 
-import tetris.Tetris.TetrisAction;
-
 public class CTetris extends Tetris{
 	// 컬러용 스크린 추가
 	private Matrix iCScreen = null;	
@@ -100,15 +98,15 @@ public class CTetris extends Tetris{
 			super(d, u);
 			// TODO Auto-generated constructor stub
 		}
-		
-    	public boolean run(CTetris ct, char key, boolean update) throws Exception{
+    	public boolean run(Tetris t, char key, boolean update) throws Exception{
+    		System.out.println("CTetrisAction");
     		boolean anyConflict = false;
-    		hDo.run(ct, key);
+    		hDo.run(t, key);
     		Matrix tempBlk;
     		tempBlk = iScreen.clip(top, left, top+currBlk.get_dy(), left+currBlk.get_dx());
     		tempBlk = tempBlk.add(currBlk);
     		if ((anyConflict = tempBlk.anyGreaterThan(1)) == true){	// 충돌이 있음.
-    			hUndo.run(ct, key);	// 취소
+    			hUndo.run(t, key);	// 취소
     			tempBlk = iScreen.clip(top, left, top+currBlk.get_dy(), left+currBlk.get_dx());
     			tempBlk = tempBlk.add(currBlk);
     		}
@@ -119,9 +117,9 @@ public class CTetris extends Tetris{
     		return anyConflict;
     	}
     }
-    private CTetrisAction moveLeft, moveRight, moveDown, rotateCW, insertBlk;
     
-    private void setTetrisActions(){
+    // ??
+    protected void setTetrisActions(){
     	moveLeft = new CTetrisAction(onCLeft, onCRight);
     	moveRight = new CTetrisAction(onCRight, onCLeft);
     	moveDown = new CTetrisAction(onCDown, onCUp);
@@ -205,8 +203,8 @@ class OnColorCCW implements CActionHandler {	// 이름 주의!
 }
 
 class OnCNewBlock implements CActionHandler {
-	public void run(CTetris ct, char key) throws MatrixException { 
-		// ???
+	public void run(CTetris ct, char key) throws MatrixException {
+		// ?? System.out.println("test1");
 		if(ct.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
 			ct.oScreen = ct.fullLineDelete(ct.oScreen);
 
