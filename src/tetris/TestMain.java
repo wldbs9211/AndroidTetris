@@ -354,57 +354,57 @@ public class TestMain {
 	
     public static void main(String[] args) throws Exception {
     	// 손가락을 만드는 과정. 자유롭게 기능을 바꿀 수 있도록..
-    	OnLeft myOnLeft = new OnLeft(){
-        	public void run(CTetris t, char key) { t.left = t.left - 1; }
+    	OnCLeft myOnCLeft = new OnCLeft(){
+        	public void run(CTetris ct, char key) { ct.left = ct.left - 1; }
         };
-    	OnRight myOnRight = new OnRight(){
-        	public void run(CTetris t, char key) { t.left = t.left + 1; }
+    	OnCRight myOnCRight = new OnCRight(){
+        	public void run(CTetris ct, char key) { ct.left = ct.left + 1; }
         };
-    	OnDown myOnDown = new OnDown(){
-        	public void run(CTetris t, char key) { t.top = t.top + 1; }
+    	OnCDown myOnCDown = new OnCDown(){
+        	public void run(CTetris ct, char key) { ct.top = ct.top + 1; }
         };
-    	OnUp myOnUp = new OnUp(){
-    		public void run(CTetris t, char key) { t.top = t.top - 1; }
+    	OnCUp myOnCUp = new OnCUp(){
+    		public void run(CTetris ct, char key) { ct.top = ct.top - 1; }
         };
-    	OnCW myOnCW = new OnCW(){
-        	public void run(CTetris t, char key) {
-        		t.idxBlockDegree = (t.idxBlockDegree + 1) % t.nBlockDegrees;
-        		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];
+    	OnColorCW myOnColorCW = new OnColorCW(){
+        	public void run(CTetris ct, char key) {
+        		ct.idxBlockDegree = (ct.idxBlockDegree + 1) % ct.nBlockDegrees;
+        		ct.currBlk = ct.setOfBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
         	}
         };
-    	OnCCW myOnCCW = new OnCCW(){
-    		public void run(CTetris t, char key) {
-        		t.idxBlockDegree = (t.idxBlockDegree + 3) % t.nBlockDegrees;
-        		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];
+    	OnColorCCW myOnColorCCW = new OnColorCCW(){
+    		public void run(CTetris ct, char key) {
+        		ct.idxBlockDegree = (ct.idxBlockDegree + 3) % ct.nBlockDegrees;
+        		ct.currBlk = ct.setOfBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
         	}
         };
-    	OnNewBlock myOnNewBlock = new OnNewBlock() {
-    		public void run(CTetris t, char key) throws Exception {
-        		if(t.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
-        			fullLineDelete(t);	// 이전과는 다르게 아래 새롭게 만든 fullLineDelete를 사용함.
-        		t.isJustStarted = false;
+    	OnCNewBlock myOnCNewBlock = new OnCNewBlock() {
+    		public void run(CTetris ct, char key) throws MatrixException{
+        		if(ct.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
+        			fullLineDelete(ct);	// 이전과는 다르게 아래 새롭게 만든 fullLineDelete를 사용함.
+        		ct.isJustStarted = false;
         		
-        		t.iScreen = new Matrix(t.oScreen);
-        		t.top = 0;
-        		t.left = t.iScreenDw + t.iScreenDx/2 - 2;
-        		t.idxBlockType = key - '0';
-        		t.idxBlockDegree = 0;
-        		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];        		
+        		ct.iScreen = new Matrix(ct.oScreen);
+        		ct.top = 0;
+        		ct.left = ct.iScreenDw + ct.iScreenDx/2 - 2;
+        		ct.idxBlockType = key - '0';
+        		ct.idxBlockDegree = 0;
+        		ct.currBlk = ct.setOfBlockObjects[ct.idxBlockType][ct.idxBlockDegree];        		
         	}
     		
     		//deltefullLine
-    		public void fullLineDelete(CTetris tetris){
-    			int fullLine = tetris.findFullLine(tetris.oScreen);
+    		public void fullLineDelete(CTetris ct){
+    			int fullLine = ct.findFullLine(ct.oScreen);
     			while(fullLine > 0){
     				try{
     					Matrix tempBlk;
-    					tempBlk = tetris.oScreen.clip(0, 0, fullLine, 2*tetris.iScreenDw + tetris.iScreenDx);	
-    					tetris.oScreen.paste(tempBlk, 1, 0);	  
-    			        int[][] emptyLine = new int[1][tetris.iScreenDx];
-    			        for(int i = 0; i < tetris.iScreenDx; i++) emptyLine[0][i] = 0;
+    					tempBlk = ct.oScreen.clip(0, 0, fullLine, 2*ct.iScreenDw + ct.iScreenDx);	
+    					ct.oScreen.paste(tempBlk, 1, 0);	  
+    			        int[][] emptyLine = new int[1][ct.iScreenDx];
+    			        for(int i = 0; i < ct.iScreenDx; i++) emptyLine[0][i] = 0;
     			        Matrix emptyLineMatrix = new Matrix(emptyLine);
-    			        tetris.oScreen.paste(emptyLineMatrix, 0, tetris.iScreenDw); 	
-    			        fullLine = tetris.findFullLine(tetris.oScreen); 
+    			        ct.oScreen.paste(emptyLineMatrix, 0, ct.iScreenDw); 	
+    			        fullLine = ct.findFullLine(ct.oScreen); 
     				}catch(Exception e){
     					System.out.println(e);
     				}
@@ -413,8 +413,8 @@ public class TestMain {
     		}
     	};
     	
-    	OnFinished myOnFinished = new OnFinished() {
-    		public void run(CTetris t, char key){
+    	OnCFinished myOnCFinished = new OnCFinished() {
+    		public void run(CTetris ct, char key){
     			System.out.println("OnFinished.run(); called");
     		}
     	};
@@ -425,14 +425,14 @@ public class TestMain {
         CTetris.init(setOfBlockArrays, setOfCBlockArrays);
         CTetris board = new CTetris(15, 10, setOfBlockArrays);
         
-        board.setOnLeftListener(myOnLeft);
-        board.setOnRightListener(myOnRight);
-        board.setOnDownListener(myOnDown);
-        board.setOnUpListener(myOnUp);
-        board.setOnCWListener(myOnCW);
-        board.setOnCCWListener(myOnCCW);
-        board.setOnNewBlockListener(myOnNewBlock);
-        board.setOnFinishedListener(myOnFinished);
+        board.setOnLeftListener(myOnCLeft);
+        board.setOnRightListener(myOnCRight);
+        board.setOnDownListener(myOnCDown);
+        board.setOnUpListener(myOnCUp);
+        board.setOnCWListener(myOnColorCW);
+        board.setOnCCWListener(myOnColorCCW);
+        board.setOnNewBlockListener(myOnCNewBlock);
+        board.setOnFinishedListener(myOnCFinished);
         
         Random random = new Random();
         idxType = random.nextInt(7);

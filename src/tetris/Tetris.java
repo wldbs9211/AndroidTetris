@@ -22,7 +22,7 @@ public class Tetris {
 	private final static int debugLevel3 = 3;	// 특정 이벤트가 발생한 상황에서 변수의 변화 등에 대한 정보.
 
     private TetrisState tetrisState;
-	private boolean tetrisActionsInitialized = false;
+	protected boolean tetrisActionsInitialized = false;
 	protected static int nBlockTypes;
 	
 	protected static int iScreenDw;
@@ -142,7 +142,7 @@ public class Tetris {
     
     
     class TetrisAction{
-    	private ActionHandler hDo, hUndo;
+    	protected ActionHandler hDo, hUndo;
     	public TetrisAction(ActionHandler d, ActionHandler u){
     		hDo = d;
     		hUndo = u;
