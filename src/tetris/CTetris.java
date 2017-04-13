@@ -83,4 +83,100 @@ public class CTetris extends Tetris{
 			System.out.println("등록되지 않은 블록의 출력, CTetris printCharacter 함수");
 		}
 	}
+	
+	interface CActionHandler extends ActionHandler{
+		public void run(CTetris ct, char key) throws Exception;
+	}
+	
+	class OnCLeft implements CActionHandler {
+		public void run(CTetris ct, char key) { ct.left = ct.left - 1; }
+
+		@Override
+		public void run(Tetris t, char key) throws Exception {
+			// TODO Auto-generated method stub
+		}
+	}
+	
+	class OnCRight implements CActionHandler {
+		public void run(CTetris ct, char key) { ct.left = ct.left + 1; }
+
+		@Override
+		public void run(Tetris t, char key) throws Exception {
+			// TODO Auto-generated method stub
+		}
+	}
+	
+	class OnCDown implements CActionHandler {
+		public void run(CTetris ct, char key) { ct.top = ct.top + 1; }
+
+		@Override
+		public void run(Tetris t, char key) throws Exception {
+			// TODO Auto-generated method stub
+		}
+	}
+	
+	class OnCUp implements CActionHandler {
+		public void run(CTetris ct, char key) { ct.top = ct.top - 1; }
+
+		@Override
+		public void run(Tetris t, char key) throws Exception {
+			// TODO Auto-generated method stub
+		}
+	}
+	
+	class OnCCW implements CActionHandler {		// 이름 주의! -> C가 하나 더 붙어서 OnCCW 지만 시계방향 회전임.
+		public void run(CTetris ct, char key) { 
+			ct.idxBlockDegree = (ct.idxBlockDegree + 1) % ct.nBlockDegrees;
+			ct.currBlk = ct.setOfBlockObjects[ct.idxBlockType][ct.idxBlockDegree]; 
+			}
+
+		@Override
+		public void run(Tetris t, char key) throws Exception {
+			// TODO Auto-generated method stub
+		}
+	}
+	
+	class OnCCCW implements CActionHandler {	// 이름 주의!
+		public void run(CTetris ct, char key) { 
+			ct.idxBlockDegree = (ct.idxBlockDegree + 3) % ct.nBlockDegrees;
+			ct.currBlk = ct.setOfBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
+		}
+
+		@Override
+		public void run(Tetris t, char key) throws Exception {
+			// TODO Auto-generated method stub
+		}
+	}
+	
+	class OnCNewBlock implements CActionHandler {
+		public void run(CTetris ct, char key) throws MatrixException { 
+			// ???
+			if(ct.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
+				ct.oScreen = ct.fullLineDelete(ct.oScreen);
+
+			ct.isJustStarted = false;
+			ct.iScreen = new Matrix(ct.oScreen);
+			ct.top = 0;
+			ct.left = ct.iScreenDw + ct.iScreenDx/2 - 2;
+			ct.idxBlockType = key - '0';
+			ct.idxBlockDegree = 0;
+			ct.currBlk = ct.setOfBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
+		}
+
+		@Override
+		public void run(Tetris t, char key) throws Exception {
+			// TODO Auto-generated method stub
+		}
+	}
+	
+	class OnCFinished implements CActionHandler {
+		public void run(CTetris ct, char key) { 
+			System.out.println("OnFinished.run(); called");
+		}
+
+		@Override
+		public void run(Tetris t, char key) throws Exception {
+			// TODO Auto-generated method stub
+		}
+	}
 }
