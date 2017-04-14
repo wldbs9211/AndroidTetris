@@ -165,6 +165,7 @@ class OnCLeft implements CActionHandler {
 	@Override
 	public void run(Tetris t, char key) throws Exception {
 		// TODO Auto-generated method stub
+		t.left = t.left - 1;
 	}
 }
 
@@ -175,6 +176,7 @@ class OnCRight implements CActionHandler {
 	@Override
 	public void run(Tetris t, char key) throws Exception {
 		// TODO Auto-generated method stub
+		t.left = t.left + 1;
 	}
 }
 
@@ -185,6 +187,7 @@ class OnCDown implements CActionHandler {
 	@Override
 	public void run(Tetris t, char key) throws Exception {
 		// TODO Auto-generated method stub
+		t.top = t.top + 1;
 	}
 }
 
@@ -195,6 +198,7 @@ class OnCUp implements CActionHandler {
 	@Override
 	public void run(Tetris t, char key) throws Exception {
 		// TODO Auto-generated method stub
+		t.top = t.top - 1;
 	}
 }
 
@@ -208,6 +212,8 @@ class OnColorCW implements CActionHandler {		// 이름 주의! -> C가 하나 �
 	@Override
 	public void run(Tetris t, char key) throws Exception {
 		// TODO Auto-generated method stub
+		t.idxBlockDegree = (t.idxBlockDegree + 1) % t.nBlockDegrees;
+		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];
 	}
 }
 
@@ -221,6 +227,8 @@ class OnColorCCW implements CActionHandler {	// 이름 주의!
 	@Override
 	public void run(Tetris t, char key) throws Exception {
 		// TODO Auto-generated method stub
+		t.idxBlockDegree = (t.idxBlockDegree + 3) % t.nBlockDegrees;
+		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];
 	}
 }
 
@@ -243,7 +251,7 @@ class OnCNewBlock implements CActionHandler {
 	
 	@Override
 	public void run(Tetris t, char key) throws MatrixException{
-		System.out.println("test22");
+		System.out.println("test22");	// ??
 		if(t.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
 			fullLineDelete(t);	// 이전과는 다르게 아래 새롭게 만든 fullLineDelete를 사용함.
 		t.isJustStarted = false;
