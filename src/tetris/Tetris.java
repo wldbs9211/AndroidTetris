@@ -151,12 +151,12 @@ public class Tetris {
     		boolean anyConflict = false;
     		hDo.run(t, key);
     		Matrix tempBlk;
-    		tempBlk = iScreen.clip(top, left, top+currBlk.get_dy(), left+currBlk.get_dx());
-    		tempBlk = tempBlk.add(currBlk);
-    		if ((anyConflict = tempBlk.anyGreaterThan(1)) == true){
-    			hUndo.run(t, key);
-    			tempBlk = iScreen.clip(top, left, top+currBlk.get_dy(), left+currBlk.get_dx());
-    			tempBlk = tempBlk.add(currBlk);
+    		tempBlk = iScreen.clip(top, left, top+currBlk.get_dy(), left+currBlk.get_dx());	// 배경 뜯어옴
+    		tempBlk = tempBlk.add(currBlk);	// 배경에 현재 블록을 삽입
+    		if ((anyConflict = tempBlk.anyGreaterThan(1)) == true){	// 충돌검사
+    			hUndo.run(t, key);	// 되돌리기
+    			tempBlk = iScreen.clip(top, left, top+currBlk.get_dy(), left+currBlk.get_dx());	// 배경 다시 뜯고
+    			tempBlk = tempBlk.add(currBlk);	// 다시 이전처럼 붙임
     		}
     		if(update == true){
     			oScreen = new Matrix(iScreen);
@@ -183,23 +183,6 @@ public class Tetris {
     public void setOnNewBlockListener(OnNewBlock listener) { tetrisActionsInitialized = false; onNewBlock = listener; }
     public void setOnFinishedListener(OnFinished listener) { tetrisActionsInitialized = false; onFinished = listener; }
     
-    /*
-     * 입력
-     * 1. 입력한 키 값 -> key
-     * 2. 난수 발생하여 들어온 블록번호 -> idxType
-     * 
-     * 목적
-     * - 게임 엔진에 불확정적인 것을 포함시키지 않기 위함. 이전 버전에서 랜덤 관련 처리 등.. 
-     * - 게임의 입력이 바뀌어도 상관없이 쓸 수 있도록.. 
-     * 
-     * 참고
-     * - 난수를 발생하는 것은 Tetris 클래스 내에서 처리하지 않고, Main 함수에서 넘겨줌.
-     * - 따라서 이 함수에서는 외부의 들어온 입력에 대해서 처리를 진행함.
-     * - 게임의 상태에 대해서 top, left, blkType, blkDegree, screen 등으로 위치, 회전, 모양, 상태 등을 저장해야함.
-     * 
-     * 리턴
-     * - 현재 프로그램의 상태 리턴 
-     */
     public TetrisState accept(char key) throws Exception {
     	if(currentDebugLevel >= debugLevel3) System.out.println("Key 들어오기 전 State : " + tetrisState);
         if(currentDebugLevel >= debugLevel3) System.out.println("들어온 key : " + key);
@@ -221,94 +204,28 @@ public class Tetris {
     		}
     		return tetrisState;
     	}
-        
-        /*
-        // Start 혹은 NewBlock 상태에서만 현재 블록을 변경시킴, 나머지는 조작 상태이기 때문에 idxType을 바꿀 필요가 없음.
-        if(tetrisState == TetrisState.Start || tetrisState == TetrisState.NewBlock){
-        	idxType = key - '0';
-        	if(currentDebugLevel >= debugLevel3) System.out.println("idxType : " + idxType);
-        	
-        	blkType = idxType; // 외부에서 받아온 블록 모양 	
-            currBlk = setOfBlockObjects[blkType][blkDegree];
-        }
-        
-        // 상태는 일단 Running으로 변경, 예외(Error, Stop 상황)가 발생하면 그 시점에서 동작을 중단하고 상태를 변경 후 바로 리턴함. 
-        tetrisState = TetrisState.Running;	
 
-        // 게임의 상태니 위로 올림.
-        //int top = 0;
-        //int left = iScreenDw + iScreenDx/2 - 2;
-        //int[][] arrayScreen = createArrayScreen(iScreenDy, iScreenDx, iScreenDw);
-        /1/char key;
-        //Matrix iScreen = new Matrix(arrayScreen);
-        
-        // 기존의 난수 생성은 삭제한다.
-        //Random random = new Random(); // 다음 블록을 결정할 난수생성기
-        //int idxBlockType = random.nextInt(numberOfBlockType);
-        
-        if(currentDebugLevel >= debugLevel3) System.out.println("다음 블록 번호 : " + blkType);
-        //다음 블록을 생성한다. 
-        currBlk = setOfBlockObjects[blkType][blkDegree];	
-        Matrix tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx());
-        tempBlk = tempBlk.add(currBlk);
-
-        // 이 부분을 추가하는 이유는 블록이 생성되자마자 다른 블록과 충돌(게임오버 조건) 검사하기 위함임. 여기서 검사하지 않으면 화면에 x자가 출력된다. 아래 부분을 실행 말고 종료.
-        if(tempBlk.anyGreaterThan(1)){
-        	if(currentDebugLevel >= debugLevel3) System.out.println("종료조건 충족");
-        	tetrisState = TetrisState.Finished;
-        	if(currentDebugLevel >= debugLevel3) System.out.println("accept 처리 후 State : " + tetrisState);
-        	return tetrisState;
-        }
-        
-        // Matrix oScreen = new Matrix(iScreen);
-        oScreen.paste(tempBlk, top, left);
-        //printScreen(); System.out.println();
-		*/
-
-        //while ((key = getKey()) != 'q') {
             switch (key) {
                 case 'a':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 왼쪽 이동.");
-                    //left--;
-                	//onLeft.run(key);
                 	moveLeft.run(this, key, true);
                     break;
                 case 'd':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 오른쪽 이동.");
-                    //left++;
-                	//onRight.run(key);
                 	moveRight.run(this, key,  true);
                     break;
                 case 's':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 아래로 이동. top 변화 전 : " + top);
-                    //top++;
-                    //onDown.run(key);
                 	if(moveDown.run(this, key,  true) == true) tetrisState = TetrisState.NewBlock;	// 아래로 보내보고, 충돌이 있다면 새 블록 상태로.
                     if(currentDebugLevel >= debugLevel2) System.out.println("블록 아래로 이동. top 변화 후: " + top);
                     break;
                 case 'w':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록을 회전시킵니다.");
-                	/*
-                	blkDegree = (blkDegree + 1) % 4;
-                	currBlk = setOfBlockObjects[blkType][blkDegree];
-                	*/
-                	//onCW.run(key);
                 	rotateCW.run(this, key, true);
                 	if(currentDebugLevel >= debugLevel3) System.out.println("idxBlockDegree : " + idxBlockDegree);
                     break;
                 case ' ':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록을 끝까지 내립니다.");
-                    /*
-                    // 바닥에 닿기 전까지 한칸씩 내려가며 충돌하나 비교한다.
-                	while (!tempBlk.anyGreaterThan(1)){ // 충돌까지 내린다.
-                    	//top ++;	// 내리고.
-                    	onDown.run(key);
-                    	tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx()); // 갱신하고.
-                        tempBlk = tempBlk.add(currBlk); // 현재 블록 넣고.
-                    	if(currentDebugLevel >= debugLevel3) System.out.println("블록을 하나 내려봅니다. top : " + top );
-                    }
-					// 여기까지 왔다면 블록은 현재 충돌된 상태임. 아래 최종 작업에서 top을 하나 빼주어야함.
-                    */
                 	while(moveDown.run(this, key, false) == false);	// 바닥 충돌을 안했다면 계속 내린다. 화면 업데이트는 하지 않음.
                 	moveDown.run(this, key,  true);
                 	tetrisState = TetrisState.NewBlock;
@@ -324,58 +241,6 @@ public class Tetris {
 	                	return tetrisState;	// 에러인 경우에는 아래를 실행하지 않고 끝내자.
                 	}
             }
-            /*
-            tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx());
-            tempBlk = tempBlk.add(currBlk);
-            if (tempBlk.anyGreaterThan(1)) {
-                switch (key) {
-                    case 'a':
-                        //left++;
-                    	onRight.run(key);
-                        break;
-                    case 'd':
-                        //left--;
-                    	onLeft.run(key);
-                        break;
-                    case 's':
-                        //top--;
-                    	onUp.run(key);
-                    	tetrisState = TetrisState.NewBlock;
-                        break;
-                    case 'w':
-                    	if(currentDebugLevel >= debugLevel2) System.out.println("블록이 회전 과정에서 충돌하였음. 이전으로 돌아감");
-                    	
-                    	//blkDegree = blkDegree - 1;	// Degree를 이전으로 돌림.
-                    	//if(blkDegree == -1) blkDegree = 3; // 회전 : 3 -> 0 , 충돌 : 0 -> -1 케이스니 3으로 되돌림.
-                    	//currBlk = setOfBlockObjects[blkType][blkDegree];
-                    	
-                    	onCCW.run(key);
-                        break;
-                    case ' ':
-                    	// 이미 충돌된 상태임. top을 하나 빼주어 충돌 직전 위치로 이동. 
-                    	//top--;
-                    	onUp.run(key);
-                    	if(currentDebugLevel >= debugLevel3) System.out.println("블록이 바닥에 충돌하였음. 최종 top의 값 : " + top);
-                    	tetrisState = TetrisState.NewBlock;
-                        break;
-                }
-                tempBlk = iScreen.clip(top, left, top + currBlk.get_dy(), left + currBlk.get_dx());
-                tempBlk = tempBlk.add(currBlk);
-            }
-            
-            oScreen = new Matrix(iScreen);
-            oScreen.paste(tempBlk, top, left);
-            //printScreen(); System.out.println();
-          
-            oScreen.fullLineDelete(oScreen, iScreenDw, tempBlk, iScreenDx);
-        	
-        	if(tetrisState == TetrisState.NewBlock){	// 새로운 블록이 필요한 경우라면..
-        		iScreen = new Matrix(oScreen);	// 마지막 상태 iScreen에 저장.
-        		top = 0;	
-                left = iScreenDw + iScreenDx/2 - 2;
-                blkDegree = 0;	// 각도 0으로.
-        	}
-        	*/
         	if(currentDebugLevel >= debugLevel3) System.out.println("accept 처리 후 State : " + tetrisState);
             return tetrisState;
     }    
@@ -409,21 +274,14 @@ public class Tetris {
 		
 		while(fullLine > 0){	// fullLine이 검출된 경우, 루프를 돌면서 FullLine이 사라질 때까지 검사.
 			try{
-				// 잘라내는 작업.
-		        //tempBlk = oScreen.clip(0, iScreenDw, fullLine, iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽은 복사 안함.
 				Matrix tempBlk;
 				tempBlk = screen.clip(0, 0, fullLine, 2*iScreenDw + iScreenDx);	 // 0(맨 위) ~ fullLine(아래) 모두 잘라낸다. 벽 포함.
 				// 자른 블록 표시.
 		        if(currentDebugLevel >= debugLevel3) tempBlk.print();	
-		        // 붙이는 작업.
-		        //oScreen.paste(tempBlk, 1, iScreenDw);	// 잘랐던 블록들을 붙여넣는다. 한칸 아래로 가니까 인자 2번 1, left는 iScreenDw
 		        screen.paste(tempBlk, 1, 0);	// 잘랐던 블록들을 붙여넣는다. 벽 포함.
-		        //printScreen(oScreen); System.out.println();        
-		        
+		                
 		        // 맨 윗줄 처리와 관련된 부분이다.
 		        if(currentDebugLevel >= debugLevel3) System.out.println("맨 윗줄 처리.");
-		        //한칸 내려오면 맨 윗칸은 모두 0으로 바꿔야함.
-		        //int[][] emptyLine = createArrayScreen(1,iScreenDx, 0);	// 여기서는 이것을 쓰지 못함.
 		        
 		        // 예) Matrix(1,10) , 0 0 0 0 0 0 0 0 0 0, 빈 라인 만들기 위함.  
 		        int[][] emptyLine = new int[1][iScreenDx];
@@ -432,7 +290,6 @@ public class Tetris {
 		        Matrix emptyLineMatrix = new Matrix(emptyLine);
 		        if(currentDebugLevel >= debugLevel3) emptyLineMatrix.print();
 		        screen.paste(emptyLineMatrix, 0, iScreenDw); // 빈 라인을 맨 윗줄에 붙인다.	
-		        //printScreen(oScreen); System.out.println();
 		        
 		        // 한번에 여러 줄이 삭제될 수도 있음. 따라서 계속 검사.
 		        fullLine = findFullLine(screen); 
