@@ -441,13 +441,13 @@ public class TestMain {
         key = (char) ('0' + random.nextInt(7));
         state = board.accept(key);
         //board2.accept('0', idxType);	//board , board2에 동일한 key 전달
-        board.printScreen(); System.out.println();
+        board.printCScreen(); System.out.println();
         //board2.printScreen(); System.out.println();
         while((key = getKey()) != 'q'){
         	state = board.accept(key);
         	//board2.accept(key, idxType);	//board , board2에 동일한 key 전달
         	
-        	board.printScreen(); System.out.println();
+        	board.printCScreen(); System.out.println();
         	//board2.printScreen(); System.out.println();
         	
         	// 새로운 블록이 필요하지 않다면 idxType을 계속 저장하여 유지한다. degree는 Tetris 클래스에서 내부적으로 저장.
@@ -456,7 +456,7 @@ public class TestMain {
         		state = board.accept(key);
         		//board2.accept('0', idxType); //board , board2에 동일한 key 전달
         		
-        		board.printScreen(); System.out.println();
+        		board.printCScreen(); System.out.println();
         		//board2.printScreen(); System.out.println();
         		if (state == TetrisState.Finished){ // 새 블록이 필요한 상태에서 또 중복되었다면 게임종료.
         			System.out.println("Game Over!");

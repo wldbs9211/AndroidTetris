@@ -1,7 +1,5 @@
 package tetris;
 
-import tetris.Tetris.TetrisAction;
-
 public class CTetris extends Tetris{
 	/*
 	 * 디버그 레벨에 따라서 출력여부를 결정한다.
@@ -16,17 +14,17 @@ public class CTetris extends Tetris{
 	private final static int debugLevel2 = 2;	// 프로그램에서 어떠한 이벤트에 대한 정보.
 	private final static int debugLevel3 = 3;	// 특정 이벤트가 발생한 상황에서 변수의 변화 등에 대한 정보.
 	
-	// 컬러용 스크린 추가
-	Matrix iCScreen = null;	
-	Matrix oCScreen = null;
-
-	Matrix currCBlk = null; // ?? public?
-	public static Matrix[][] setOfCBlockObjects; // ?? 
+	// 컬러용 변수 추가
+	public Matrix iCScreen = null;	
+	public Matrix oCScreen = null;
+	public Matrix currCBlk = null; 
+	public static Matrix[][] setOfCBlockObjects;   
 	
 	public CTetris(int cy, int cx, int[][][][] setOfBlkArrays) throws Exception {
 		super(cy, cx, setOfBlkArrays);
 		// TODO Auto-generated constructor stub
-		iCScreen = new Matrix(createArrayScreen(iScreenDy,iScreenDx, iScreenDw));	// 추가
+		iCScreen = new Matrix(createArrayScreen(iScreenDy,iScreenDx, iScreenDw));	
+		oCScreen = new Matrix(iCScreen);
 	}
 	
 	public static void init(int[][][][] setOfBlkArrays, int[][][][] setOfCBlkArrays) throws MatrixException{
@@ -46,11 +44,11 @@ public class CTetris extends Tetris{
 	
 	// 모양을 다르게 출력
 	public void printCScreen() {
-    	Matrix screen = iCScreen;
-        int dy = iCScreen.get_dy();
-        int dx = iCScreen.get_dx();
+    	Matrix screen = oCScreen;
+        int dy = oCScreen.get_dy();
+        int dx = oCScreen.get_dx();
         int dw = iScreenDw;
-        int array[][] = iCScreen.get_array();
+        int array[][] = oCScreen.get_array();
         for (int y = 0; y < dy - dw + 1; y++) {
             for (int x = dw -1; x < dx - dw + 1; x++) {
             	// 여기에 블록의 타입별로 다르게 뷰에 뿌려줘야함.
@@ -84,10 +82,10 @@ public class CTetris extends Tetris{
 			System.out.print("♥ ");
 			break;
 		case 5 :
-			System.out.print("☺ ");
+			System.out.print("% ");
 			break;
 		case 6 :
-			System.out.print("⊙ ");	
+			System.out.print("& ");	
 			break;
 		case 7 :
 			System.out.print("◈ ");	
@@ -96,7 +94,7 @@ public class CTetris extends Tetris{
 			System.out.print("◈ ");	
 			break;
 		default :
-			System.out.println("등록되지 않은 블록의 출력, CTetris printCharacter 함수");
+			System.out.print("? ");
 		}
 	}
 	
@@ -110,25 +108,21 @@ public class CTetris extends Tetris{
     private OnCFinished onCFinished = new OnCFinished();
 	
     class CTetrisAction extends TetrisAction{
-    	public CTetrisAction(CActionHandler d, CActionHandler u) {
+    	public CTetrisAction(ActionHandler d, ActionHandler u) {
 			super(d, u);
 			// TODO Auto-generated constructor stub
 			if(currentDebugLevel >= debugLevel3) System.out.println("CTetrisAction 생성자 호출");
 		}
     	
-    	// !! 여기를 인자를 바꿔버리면 부모 것이 불린다...
     	public boolean run(Tetris t, char key, boolean update) throws Exception{
-    		System.out.println("CTetrisAction 호출, key : " + key);
-    		// !!! 여기에 run 함수가 인자가 CTetris가 아니라 그냥 Tetris라서 핸들러 함수가 내가 원하는 것이 안불린다. 
+    		//System.out.println("CTetrisAction 호출, key : " + key);
     		boolean anyConflict = false;
     		hDo.run(t, key);
     		Matrix tempBlk; 
     		Matrix tempCBlk;
     		
-    		currCBlk = setOfCBlockObjects[idxBlockType][idxBlockDegree]; //!! 지워
-    		
     		tempBlk = iScreen.clip(top, left, top+currBlk.get_dy(), left+currBlk.get_dx());
-    		tempCBlk = iCScreen.clip(top, left, top+currCBlk.get_dy(), left+currCBlk.get_dx());	// ??
+    		tempCBlk = iCScreen.clip(top, left, top+currCBlk.get_dy(), left+currCBlk.get_dx());	// 추가
     		
     		tempBlk = tempBlk.add(currBlk);
     		tempCBlk = tempCBlk.add(currCBlk);	// 추가
@@ -145,18 +139,14 @@ public class CTetris extends Tetris{
     			oCScreen = new Matrix(iCScreen);	// 추가
     			oScreen.paste(tempBlk, top, left);
     			oCScreen.paste(tempCBlk, top, left);	// 추가
-    			
-    			System.out.println("화면 업데이트 !!");
-    			//iCScreen = new Matrix(oCScreen);// !!
-    			oCScreen.print();// !! 지워야함
-    			printCScreen();// !!
+    			oCScreen.print();
     		}
     		return anyConflict;
     	}
     }
     protected void setTetrisActions(){
     	if(currentDebugLevel >= debugLevel3) System.out.println("CTetris의 setTetrisActions() 호출");
-    	//?? 기존의 setTetrisActions를 override해서 이벤트 발생 시 동작을 TetrisAction -> CTetrisAction으로 등록시킴, 새로운 동작을 하도록..
+    	// 기존의 setTetrisActions를 override해서 이벤트 발생 시 동작을 TetrisAction -> CTetrisAction으로 등록시킴, 새로운 동작을 하도록..
     	moveLeft = new CTetrisAction(onCLeft, onCRight);
     	moveRight = new CTetrisAction(onCRight, onCLeft);
     	moveDown = new CTetrisAction(onCDown, onCUp);
@@ -182,120 +172,124 @@ interface CActionHandler extends ActionHandler{
 class OnCLeft implements CActionHandler {
 	@Override
 	public void run(CTetris ct, char key) throws Exception { 
-		
+		ct.left = ct.left - 1;
 	}
 
 	@Override
 	public void run(Tetris t, char key) throws Exception {
 		// TODO Auto-generated method stub
-		t.left = t.left - 1;
+		run((CTetris)t,key);
 	}
 }
 
 class OnCRight implements CActionHandler {
 	@Override
 	public void run(CTetris ct, char key) throws Exception { 
-		
+		ct.left = ct.left + 1;
 	}
 
 	@Override
 	public void run(Tetris t, char key) throws Exception {
 		// TODO Auto-generated method stub
-		t.left = t.left + 1;
+		run((CTetris)t,key);
 	}
 }
 
 class OnCDown implements CActionHandler {
 	@Override
 	public void run(CTetris ct, char key) throws Exception { 
-		
+		ct.top = ct.top + 1;
 	}
 
 	@Override
 	public void run(Tetris t, char key) throws Exception {
 		// TODO Auto-generated method stub
-		t.top = t.top + 1;
+		run((CTetris)t,key);
 	}
 }
 
 class OnCUp implements CActionHandler {
 	@Override
 	public void run(CTetris ct, char key) throws Exception { 
-		
+		ct.top = ct.top - 1;
 	}
 
 	@Override
 	public void run(Tetris t, char key) throws Exception {
 		// TODO Auto-generated method stub
-		t.top = t.top - 1;
+		run((CTetris)t,key);
 	}
 }
 
 class OnColorCW implements CActionHandler {		// 이름 주의! 
 	@Override
 	public void run(CTetris ct, char key) throws Exception { 
-		// @@ 이게 불려야함..
-		System.out.println("currCBlk"); // ??
+		ct.idxBlockDegree = (ct.idxBlockDegree + 1) % ct.nBlockDegrees;
+		ct.currBlk = ct.setOfBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
 		ct.currCBlk = ct.setOfCBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
 	}
 
 	@Override
 	public void run(Tetris t, char key) throws Exception {
 		// TODO Auto-generated method stub
-		t.idxBlockDegree = (t.idxBlockDegree + 1) % t.nBlockDegrees;
-		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];
+		run((CTetris)t,key);
 	}
 }
 
 class OnColorCCW implements CActionHandler {	// 이름 주의!
 	@Override
 	public void run(CTetris ct, char key) throws Exception { 
-		System.out.println("여기가 동작해야함!"); // ??
+		ct.idxBlockDegree = (ct.idxBlockDegree + 3) % ct.nBlockDegrees;
+		ct.currBlk = ct.setOfBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
+		ct.currCBlk = ct.setOfCBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
 	}
 
 	@Override
 	public void run(Tetris t, char key) throws Exception {
 		// TODO Auto-generated method stub
-		t.idxBlockDegree = (t.idxBlockDegree + 3) % t.nBlockDegrees;
-		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];
+		run((CTetris)t,key);
 	}
 }
 
 class OnCNewBlock implements CActionHandler {
 	@Override
 	public void run(CTetris ct, char key) throws Exception {
-		System.out.println("여기가 동작해야함!"); // ??
-		ct.iCScreen = new Matrix(ct.oCScreen);
-		ct.currCBlk = ct.setOfCBlockObjects[ct.idxBlockType][ct.idxBlockDegree]; //!! 추가
+		if(ct.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
+			fullLineDelete(ct);	// 이전과는 다르게 아래 새롭게 만든 fullLineDelete를 사용함.
+		ct.isJustStarted = false;
+		
+		ct.iScreen = new Matrix(ct.oScreen);
+		ct.iCScreen = new Matrix(ct.oCScreen);	// 추가
+		ct.top = 0;
+		ct.left = ct.iScreenDw + ct.iScreenDx/2 - 2;
+		ct.idxBlockType = key - '0';
+		ct.idxBlockDegree = 0;
+		ct.currBlk = ct.setOfBlockObjects[ct.idxBlockType][ct.idxBlockDegree];  
+		ct.currCBlk = ct.setOfCBlockObjects[ct.idxBlockType][ct.idxBlockDegree]; // 추가
 	}
 	
 	@Override
-	public void run(Tetris t, char key) throws MatrixException{
-		if(t.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
-			fullLineDelete(t);	// 이전과는 다르게 아래 새롭게 만든 fullLineDelete를 사용함.
-		t.isJustStarted = false;
-		
-		t.iScreen = new Matrix(t.oScreen);
-		t.top = 0;
-		t.left = t.iScreenDw + t.iScreenDx/2 - 2;
-		t.idxBlockType = key - '0';
-		t.idxBlockDegree = 0;
-		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];   
+	public void run(Tetris t, char key) throws Exception{
+		 run((CTetris)t, key);
 	}
 	
 	//deltefullLine
-	public void fullLineDelete(Tetris t){
-		int fullLine = t.findFullLine(t.oScreen);
+	public void fullLineDelete(CTetris ct){
+		int fullLine = ct.findFullLine(ct.oScreen);
 		while(fullLine > 0){
 			try{
-				Matrix tempBlk;
-				tempBlk = t.oScreen.clip(0, 0, fullLine, 2*t.iScreenDw + t.iScreenDx);	
-				t.oScreen.paste(tempBlk, 1, 0);	  
-		        int[][] emptyLine = new int[1][t.iScreenDx];
-		        for(int i = 0; i < t.iScreenDx; i++) emptyLine[0][i] = 0;
+				Matrix tempBlk, tempCBlk;
+				
+				tempBlk = ct.oScreen.clip(0, 0, fullLine, 2*ct.iScreenDw + ct.iScreenDx);
+				tempCBlk = ct.oCScreen.clip(0, 0, fullLine, 2*ct.iScreenDw + ct.iScreenDx);
+				ct.oScreen.paste(tempBlk, 1, 0);
+				ct.oCScreen.paste(tempCBlk, 1, 0);
+		        int[][] emptyLine = new int[1][ct.iScreenDx];
+		        for(int i = 0; i < ct.iScreenDx; i++) emptyLine[0][i] = 0;
 		        Matrix emptyLineMatrix = new Matrix(emptyLine);
-		        t.oScreen.paste(emptyLineMatrix, 0, t.iScreenDw); 	
-		        fullLine = t.findFullLine(t.oScreen); 
+		        ct.oScreen.paste(emptyLineMatrix, 0, ct.iScreenDw);
+		        ct.oCScreen.paste(emptyLineMatrix, 0, ct.iScreenDw);
+		        fullLine = ct.findFullLine(ct.oScreen); 
 			}catch(Exception e){
 				System.out.println(e);
 			}
@@ -307,11 +301,11 @@ class OnCNewBlock implements CActionHandler {
 class OnCFinished implements CActionHandler {
 	@Override
 	public void run(CTetris ct, char key) throws Exception {
-
+		System.out.println("OnFinished.run(); called");
 	}
 	@Override
 	public void run(Tetris t, char key) throws Exception {
 		// TODO Auto-generated method stub
-		System.out.println("OnFinished.run(); called");
+		run((CTetris)t,key);
 	}
 }
