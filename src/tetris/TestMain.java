@@ -353,58 +353,121 @@ public class TestMain {
     }
 	
     public static void main(String[] args) throws Exception {
-    	// 손가락을 만드는 과정. 자유롭게 기능을 바꿀 수 있도록..
+    	// 손가락을 만드는 과정. 자유롭게 기능을 바꿀 수 있도록.., 혹시나 필요하다면 만들고, 없으면 Default로 생성한 것이 동작한다.
     	OnCLeft myOnCLeft = new OnCLeft(){
-        	public void run(CTetris ct, char key) { ct.left = ct.left - 1; }
+    		@Override
+    		public void run(CTetris ct, char key) throws Exception { 
+    			ct.left = ct.left - 1;
+    		}
+    		@Override
+    		public void run(Tetris t, char key) throws Exception {
+    			// TODO Auto-generated method stub
+    			run((CTetris)t,key);
+    		}
         };
     	OnCRight myOnCRight = new OnCRight(){
-        	public void run(CTetris ct, char key) { ct.left = ct.left + 1; }
+    		@Override
+    		public void run(CTetris ct, char key) throws Exception { 
+    			ct.left = ct.left + 1;
+    		}
+
+    		@Override
+    		public void run(Tetris t, char key) throws Exception {
+    			// TODO Auto-generated method stub
+    			run((CTetris)t,key);
+    		}
         };
     	OnCDown myOnCDown = new OnCDown(){
-        	public void run(CTetris ct, char key) { ct.top = ct.top + 1; }
+    		@Override
+    		public void run(CTetris ct, char key) throws Exception { 
+    			ct.top = ct.top + 1;
+    		}
+
+    		@Override
+    		public void run(Tetris t, char key) throws Exception {
+    			// TODO Auto-generated method stub
+    			run((CTetris)t,key);
+    		}
         };
     	OnCUp myOnCUp = new OnCUp(){
-    		public void run(CTetris ct, char key) { ct.top = ct.top - 1; }
+    		@Override
+    		public void run(CTetris ct, char key) throws Exception { 
+    			ct.top = ct.top - 1;
+    		}
+
+    		@Override
+    		public void run(Tetris t, char key) throws Exception {
+    			// TODO Auto-generated method stub
+    			run((CTetris)t,key);
+    		}
         };
     	OnColorCW myOnColorCW = new OnColorCW(){
-        	public void run(CTetris ct, char key) {
-        		ct.idxBlockDegree = (ct.idxBlockDegree + 1) % ct.nBlockDegrees;
-        		ct.currBlk = ct.setOfBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
-        	}
+    		@Override
+    		public void run(CTetris ct, char key) throws Exception {	// 컬러도 같이 회전시켜준다. 
+    			ct.idxBlockDegree = (ct.idxBlockDegree + 1) % ct.nBlockDegrees;
+    			ct.currBlk = ct.setOfBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
+    			ct.currCBlk = ct.setOfCBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
+    		}
+
+    		@Override
+    		public void run(Tetris t, char key) throws Exception {
+    			// TODO Auto-generated method stub
+    			run((CTetris)t,key);
+    		}
         };
     	OnColorCCW myOnColorCCW = new OnColorCCW(){
-    		public void run(CTetris ct, char key) {
-        		ct.idxBlockDegree = (ct.idxBlockDegree + 3) % ct.nBlockDegrees;
-        		ct.currBlk = ct.setOfBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
-        	}
+    		@Override
+    		public void run(CTetris ct, char key) throws Exception { 	// 컬러도 같이 회전.
+    			ct.idxBlockDegree = (ct.idxBlockDegree + 3) % ct.nBlockDegrees;
+    			ct.currBlk = ct.setOfBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
+    			ct.currCBlk = ct.setOfCBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
+    		}
+
+    		@Override
+    		public void run(Tetris t, char key) throws Exception {
+    			// TODO Auto-generated method stub
+    			run((CTetris)t,key);
+    		}
         };
     	OnCNewBlock myOnCNewBlock = new OnCNewBlock() {
-    		public void run(Tetris t, char key) throws MatrixException{
-    			if(t.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
-        			fullLineDelete(t);	// 이전과는 다르게 아래 새롭게 만든 fullLineDelete를 사용함.
-        		t.isJustStarted = false;
-        		
-        		t.iScreen = new Matrix(t.oScreen);
-        		t.top = 0;
-        		t.left = t.iScreenDw + t.iScreenDx/2 - 2;
-        		t.idxBlockType = key - '0';
-        		t.idxBlockDegree = 0;
-        		t.currBlk = t.setOfBlockObjects[t.idxBlockType][t.idxBlockDegree];   
-        	}
+    		@Override
+    		public void run(CTetris ct, char key) throws Exception {	// 컬러용 스크린과 블록을 추가로 관리함 
+    			if(ct.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
+    				fullLineDelete(ct);	// 이전과는 다르게 아래 새롭게 만든 fullLineDelete를 사용함.
+    			ct.isJustStarted = false;
+    			
+    			ct.iScreen = new Matrix(ct.oScreen);
+    			ct.iCScreen = new Matrix(ct.oCScreen);	// 추가
+    			ct.top = 0;
+    			ct.left = ct.iScreenDw + ct.iScreenDx/2 - 2;
+    			ct.idxBlockType = key - '0';
+    			ct.idxBlockDegree = 0;
+    			ct.currBlk = ct.setOfBlockObjects[ct.idxBlockType][ct.idxBlockDegree];  
+    			ct.currCBlk = ct.setOfCBlockObjects[ct.idxBlockType][ct.idxBlockDegree]; // 추가
+    		}
+    		
+    		@Override
+    		public void run(Tetris t, char key) throws Exception{
+    			 run((CTetris)t, key);
+    		}
     		
     		//deltefullLine
-    		public void fullLineDelete(Tetris t){
-    			int fullLine = t.findFullLine(t.oScreen);
+    		public void fullLineDelete(CTetris ct){	// FUllLineDelte는 흑백 뿐만 아니라 컬러도 같이 삭제한다.
+    			int fullLine = ct.findFullLine(ct.oScreen);
     			while(fullLine > 0){
     				try{
-    					Matrix tempBlk;
-    					tempBlk = t.oScreen.clip(0, 0, fullLine, 2*t.iScreenDw + t.iScreenDx);	
-    					t.oScreen.paste(tempBlk, 1, 0);	  
-    			        int[][] emptyLine = new int[1][t.iScreenDx];
-    			        for(int i = 0; i < t.iScreenDx; i++) emptyLine[0][i] = 0;
+    					Matrix tempBlk, tempCBlk;
+    					
+    					tempBlk = ct.oScreen.clip(0, 0, fullLine, 2*ct.iScreenDw + ct.iScreenDx);
+    					tempCBlk = ct.oCScreen.clip(0, 0, fullLine, 2*ct.iScreenDw + ct.iScreenDx);	// 추가
+    					ct.oScreen.paste(tempBlk, 1, 0);
+    					ct.oCScreen.paste(tempCBlk, 1, 0);	// 추가
+    			        int[][] emptyLine = new int[1][ct.iScreenDx];
+    			        for(int i = 0; i < ct.iScreenDx; i++) emptyLine[0][i] = 0;
     			        Matrix emptyLineMatrix = new Matrix(emptyLine);
-    			        t.oScreen.paste(emptyLineMatrix, 0, t.iScreenDw); 	
-    			        fullLine = t.findFullLine(t.oScreen); 
+    			        ct.oScreen.paste(emptyLineMatrix, 0, ct.iScreenDw);
+    			        ct.oCScreen.paste(emptyLineMatrix, 0, ct.iScreenDw);	// 추가
+    			        fullLine = ct.findFullLine(ct.oScreen); 
     				}catch(Exception e){
     					System.out.println(e);
     				}
@@ -414,8 +477,14 @@ public class TestMain {
     	};
     	
     	OnCFinished myOnCFinished = new OnCFinished() {
-    		public void run(CTetris ct, char key){
+    		@Override
+    		public void run(CTetris ct, char key) throws Exception {
     			System.out.println("OnFinished.run(); called");
+    		}
+    		@Override
+    		public void run(Tetris t, char key) throws Exception {
+    			// TODO Auto-generated method stub
+    			run((CTetris)t,key);
     		}
     	};
     	
@@ -425,7 +494,7 @@ public class TestMain {
         CTetris.init(setOfBlockArrays, setOfCBlockArrays);
         CTetris board = new CTetris(15, 10, setOfBlockArrays);
         
-        /*
+        // 혹시나 새롭게 정의한 것이 있다면 아래와 같이 만든 것을 등록시켜준다.
         board.setOnLeftListener(myOnCLeft);
         board.setOnRightListener(myOnCRight);
         board.setOnDownListener(myOnCDown);
@@ -434,30 +503,21 @@ public class TestMain {
         board.setOnCCWListener(myOnColorCCW);
         board.setOnNewBlockListener(myOnCNewBlock);
         board.setOnFinishedListener(myOnCFinished);
-        */
         
         Random random = new Random();
         idxType = random.nextInt(7);
         key = (char) ('0' + random.nextInt(7));
         state = board.accept(key);
-        //board2.accept('0', idxType);	//board , board2에 동일한 key 전달
-        board.printCScreen(); System.out.println();
-        //board2.printScreen(); System.out.println();
+        board.printCScreen(); System.out.println();	// 출력은 컬러 스크린으로
         while((key = getKey()) != 'q'){
         	state = board.accept(key);
-        	//board2.accept(key, idxType);	//board , board2에 동일한 key 전달
-        	
         	board.printCScreen(); System.out.println();
-        	//board2.printScreen(); System.out.println();
         	
         	// 새로운 블록이 필요하지 않다면 idxType을 계속 저장하여 유지한다. degree는 Tetris 클래스에서 내부적으로 저장.
         	if (state == TetrisState.NewBlock) {
         		key = (char) ('0' + random.nextInt(7));
         		state = board.accept(key);
-        		//board2.accept('0', idxType); //board , board2에 동일한 key 전달
-        		
-        		board.printCScreen(); System.out.println();
-        		//board2.printScreen(); System.out.println();
+        		board.printCScreen(); System.out.println();	// 출력은 컬러 스크린으로
         		if (state == TetrisState.Finished){ // 새 블록이 필요한 상태에서 또 중복되었다면 게임종료.
         			System.out.println("Game Over!");
                 	System.exit(0);
@@ -467,4 +527,3 @@ public class TestMain {
         System.out.println("Program Terminated!");
     }
 }
-

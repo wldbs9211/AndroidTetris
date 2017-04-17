@@ -9,7 +9,7 @@ public class CTetris extends Tetris{
 	 * 예) currentDebugLevel의 값이 1이면, debugLevel 1만 출력 ( 프로그램의 흐름에 대한 정보만 )
 	 * 예) currentDebugLevel의 값이 0이면, 아무것도 출력하지 않음. 
 	 */
-	private final static int currentDebugLevel = 3;	// 현재 디버그 레벨.
+	private final static int currentDebugLevel = 0;	// 현재 디버그 레벨.
 	private final static int debugLevel1 = 1;	// 프로그램의 흐름에 대한 정보. 
 	private final static int debugLevel2 = 2;	// 프로그램에서 어떠한 이벤트에 대한 정보.
 	private final static int debugLevel3 = 3;	// 특정 이벤트가 발생한 상황에서 변수의 변화 등에 대한 정보.
@@ -66,14 +66,14 @@ public class CTetris extends Tetris{
 	public void printCharacter(int blockType){	// 추가
 		switch(blockType){	// 블록별로 다르게 출력
 		case 0 :	// 빈 경우는 기존 것과 동일하게 출력
-			System.out.print("ㅁ ");
+			System.out.print("□ ");
 			break;
 		case 1 :	// 벽
-			System.out.print("◙ ");
+			System.out.print("■ ");
 			break;
 		// 여기서부터 블록임. 7가지 종류 블록 타입 -> 2 ~ 8	
 		case 2 :
-			System.out.print("◈ ");
+			System.out.print("♠ ");
 			break;
 		case 3 :
 			System.out.print("♣ ");
@@ -82,16 +82,16 @@ public class CTetris extends Tetris{
 			System.out.print("♥ ");
 			break;
 		case 5 :
-			System.out.print("% ");
+			System.out.print("◙ ");
 			break;
 		case 6 :
-			System.out.print("& ");	
+			System.out.print("☻ ");	
 			break;
 		case 7 :
-			System.out.print("◈ ");	
+			System.out.print("◘ ");	
 			break;
 		case 8 :
-			System.out.print("◈ ");	
+			System.out.print("◙ ");	
 			break;
 		default :
 			System.out.print("? ");
@@ -114,6 +114,7 @@ public class CTetris extends Tetris{
 			if(currentDebugLevel >= debugLevel3) System.out.println("CTetrisAction 생성자 호출");
 		}
     	
+    	// 기존과 다르게 흑백과 컬러를 동시에 운영한다. 뷰에 뿌리는 것은 컬러로, 충돌 테스트는 흑백으로 판단
     	public boolean run(Tetris t, char key, boolean update) throws Exception{
     		//System.out.println("CTetrisAction 호출, key : " + key);
     		boolean anyConflict = false;
@@ -139,7 +140,7 @@ public class CTetris extends Tetris{
     			oCScreen = new Matrix(iCScreen);	// 추가
     			oScreen.paste(tempBlk, top, left);
     			oCScreen.paste(tempCBlk, top, left);	// 추가
-    			oCScreen.print();
+    			if(currentDebugLevel >= debugLevel3) oCScreen.print();
     		}
     		return anyConflict;
     	}
@@ -154,7 +155,7 @@ public class CTetris extends Tetris{
     	insertBlk = new CTetrisAction(onCNewBlock, onCFinished);
     	tetrisActionsInitialized = true;
     }
-    
+      
     public void setOnLeftListener(OnCLeft listener) { tetrisActionsInitialized = false; onCLeft = listener; }
     public void setOnRightListener(OnCRight listener) { tetrisActionsInitialized = false; onCRight = listener; }
     public void setOnDownListener(OnCDown listener) { tetrisActionsInitialized = false; onCDown = listener; }
@@ -223,7 +224,7 @@ class OnCUp implements CActionHandler {
 
 class OnColorCW implements CActionHandler {		// 이름 주의! 
 	@Override
-	public void run(CTetris ct, char key) throws Exception { 
+	public void run(CTetris ct, char key) throws Exception {	// 컬러도 같이 회전시켜준다. 
 		ct.idxBlockDegree = (ct.idxBlockDegree + 1) % ct.nBlockDegrees;
 		ct.currBlk = ct.setOfBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
 		ct.currCBlk = ct.setOfCBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
@@ -238,7 +239,7 @@ class OnColorCW implements CActionHandler {		// 이름 주의!
 
 class OnColorCCW implements CActionHandler {	// 이름 주의!
 	@Override
-	public void run(CTetris ct, char key) throws Exception { 
+	public void run(CTetris ct, char key) throws Exception { 	// 컬러도 같이 회전.
 		ct.idxBlockDegree = (ct.idxBlockDegree + 3) % ct.nBlockDegrees;
 		ct.currBlk = ct.setOfBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
 		ct.currCBlk = ct.setOfCBlockObjects[ct.idxBlockType][ct.idxBlockDegree];
@@ -253,7 +254,7 @@ class OnColorCCW implements CActionHandler {	// 이름 주의!
 
 class OnCNewBlock implements CActionHandler {
 	@Override
-	public void run(CTetris ct, char key) throws Exception {
+	public void run(CTetris ct, char key) throws Exception {	// 컬러용 스크린과 블록을 추가로 관리함 
 		if(ct.isJustStarted == false)	// 첫 시작이 아닌 경우에, 새 블록이 필요하다면 fullLineDelete를 진행한다.
 			fullLineDelete(ct);	// 이전과는 다르게 아래 새롭게 만든 fullLineDelete를 사용함.
 		ct.isJustStarted = false;
@@ -274,21 +275,21 @@ class OnCNewBlock implements CActionHandler {
 	}
 	
 	//deltefullLine
-	public void fullLineDelete(CTetris ct){
+	public void fullLineDelete(CTetris ct){	// FUllLineDelte는 흑백 뿐만 아니라 컬러도 같이 삭제한다.
 		int fullLine = ct.findFullLine(ct.oScreen);
 		while(fullLine > 0){
 			try{
 				Matrix tempBlk, tempCBlk;
 				
 				tempBlk = ct.oScreen.clip(0, 0, fullLine, 2*ct.iScreenDw + ct.iScreenDx);
-				tempCBlk = ct.oCScreen.clip(0, 0, fullLine, 2*ct.iScreenDw + ct.iScreenDx);
+				tempCBlk = ct.oCScreen.clip(0, 0, fullLine, 2*ct.iScreenDw + ct.iScreenDx);	// 추가
 				ct.oScreen.paste(tempBlk, 1, 0);
-				ct.oCScreen.paste(tempCBlk, 1, 0);
+				ct.oCScreen.paste(tempCBlk, 1, 0);	// 추가
 		        int[][] emptyLine = new int[1][ct.iScreenDx];
 		        for(int i = 0; i < ct.iScreenDx; i++) emptyLine[0][i] = 0;
 		        Matrix emptyLineMatrix = new Matrix(emptyLine);
 		        ct.oScreen.paste(emptyLineMatrix, 0, ct.iScreenDw);
-		        ct.oCScreen.paste(emptyLineMatrix, 0, ct.iScreenDw);
+		        ct.oCScreen.paste(emptyLineMatrix, 0, ct.iScreenDw);	// 추가
 		        fullLine = ct.findFullLine(ct.oScreen); 
 			}catch(Exception e){
 				System.out.println(e);

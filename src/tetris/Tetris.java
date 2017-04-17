@@ -183,6 +183,12 @@ public class Tetris {
     public void setOnNewBlockListener(OnNewBlock listener) { tetrisActionsInitialized = false; onNewBlock = listener; }
     public void setOnFinishedListener(OnFinished listener) { tetrisActionsInitialized = false; onFinished = listener; }
     
+    protected boolean moveLeft(char key, boolean update) throws Exception { return moveLeft.run(this, key, update); }
+	protected boolean moveRight(char key, boolean update) throws Exception { return moveRight.run(this, key, update); }
+	protected boolean moveDown(char key, boolean update) throws Exception { return moveDown.run(this, key, update); }
+	protected boolean rotateCW(char key, boolean update) throws Exception { return rotateCW.run(this, key, update); }
+	protected boolean insertBlk(char key, boolean update) throws Exception { return insertBlk.run(this, key, update); }
+	
     public TetrisState accept(char key) throws Exception {
     	if(currentDebugLevel >= debugLevel3) System.out.println("Key 들어오기 전 State : " + tetrisState);
         if(currentDebugLevel >= debugLevel3) System.out.println("들어온 key : " + key);
@@ -196,7 +202,7 @@ public class Tetris {
         }
         // NewBlock 상태에서 동작
         if(tetrisState == TetrisState.NewBlock){
-    		if(insertBlk.run(this, key, true) == true){	// 새 블록이 바로 충돌을 하면 게임종료 조건임.
+    		if(insertBlk(key, true) == true){	// 새 블록이 바로 충돌을 하면 게임종료 조건임.
     			tetrisState = TetrisState.Finished;	// 게임 끝.
     		}
     		else{
@@ -208,26 +214,26 @@ public class Tetris {
             switch (key) {
                 case 'a':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 왼쪽 이동.");
-                	moveLeft.run(this, key, true);
+                	moveLeft(key,true);
                     break;
                 case 'd':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 오른쪽 이동.");
-                	moveRight.run(this, key,  true);
+                	moveRight(key,true);
                     break;
                 case 's':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 아래로 이동. top 변화 전 : " + top);
-                	if(moveDown.run(this, key,  true) == true) tetrisState = TetrisState.NewBlock;	// 아래로 보내보고, 충돌이 있다면 새 블록 상태로.
+                	if(moveDown(key,  true) == true) tetrisState = TetrisState.NewBlock;	// 아래로 보내보고, 충돌이 있다면 새 블록 상태로.
                     if(currentDebugLevel >= debugLevel2) System.out.println("블록 아래로 이동. top 변화 후: " + top);
                     break;
                 case 'w':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록을 회전시킵니다.");
-                	rotateCW.run(this, key, true);
+                	rotateCW(key, true);
                 	if(currentDebugLevel >= debugLevel3) System.out.println("idxBlockDegree : " + idxBlockDegree);
                     break;
                 case ' ':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록을 끝까지 내립니다.");
-                	while(moveDown.run(this, key, false) == false);	// 바닥 충돌을 안했다면 계속 내린다. 화면 업데이트는 하지 않음.
-                	moveDown.run(this, key,  true);
+                	while(moveDown(key, false) == false);	// 바닥 충돌을 안했다면 계속 내린다. 화면 업데이트는 하지 않음.
+                	moveDown(key, true);
                 	tetrisState = TetrisState.NewBlock;
                     break;
                 default :
@@ -244,7 +250,7 @@ public class Tetris {
         	if(currentDebugLevel >= debugLevel3) System.out.println("accept 처리 후 State : " + tetrisState);
             return tetrisState;
     }    
-    
+
 	public int findFullLine(Matrix screen){
 		if(currentDebugLevel >= debugLevel3) System.out.println("iScreenDy : " + this.iScreenDy); 
 		if(currentDebugLevel >= debugLevel3) System.out.println("iScreenDw : " + this.iScreenDw); 
