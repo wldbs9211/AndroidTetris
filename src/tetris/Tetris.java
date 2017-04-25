@@ -214,15 +214,15 @@ public class Tetris {
             switch (key) {
                 case 'a':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 왼쪽 이동.");
-                	moveLeft(key,true);
+                	moveLeft(key, true);
                     break;
                 case 'd':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 오른쪽 이동.");
-                	moveRight(key,true);
+                	moveRight(key, true);
                     break;
                 case 's':
                 	if(currentDebugLevel >= debugLevel2) System.out.println("블록 아래로 이동. top 변화 전 : " + top);
-                	if(moveDown(key,  true) == true) tetrisState = TetrisState.NewBlock;	// 아래로 보내보고, 충돌이 있다면 새 블록 상태로.
+                	if(moveDown(key, true) == true) tetrisState = TetrisState.NewBlock;	// 아래로 보내보고, 충돌이 있다면 새 블록 상태로.
                     if(currentDebugLevel >= debugLevel2) System.out.println("블록 아래로 이동. top 변화 후: " + top);
                     break;
                 case 'w':
